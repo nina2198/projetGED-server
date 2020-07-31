@@ -35,8 +35,21 @@ class DatabaseSeeder extends Seeder
             FileSeeder::class
         ]);
     
-        
+        //module Schema
+        $this->call([
+            SchemaSeeder::class
+        ]);
+
+        //module Serice
+        $this->call([
+            ServiceSeeder::class
+        ]);
       
+      //module Activites
+      $this->call([
+            ActivitesSeeder::class
+      ]);
+
         Schema::enableForeignKeyConstraints();
         Model::reguard();
     }

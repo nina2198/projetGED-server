@@ -14,8 +14,13 @@ class CreateSchemasTable extends Migration
     public function up()
     {
         Schema::create('schemas', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('idSchema');
+            $table->string('nomSchema');
+            $table->text('description');
+            $table->unsignedBigInteger('nbreService');
             $table->timestamps();
+
+            $table->primary(['idSchema']) ;
         });
     }
 

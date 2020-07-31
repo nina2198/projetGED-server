@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInstActivitiesTable extends Migration
+class CreateServicesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class CreateInstActivitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('inst_activities', function (Blueprint $table) {
-            $table->id();
+        Schema::create('services', function (Blueprint $table) {
+            $table->unsignedBigInteger('idService');
+            $table->strring('nomService');
             $table->timestamps();
+            //constrainst
+            $table->primary(['idService']) ;
         });
     }
 
@@ -26,6 +29,6 @@ class CreateInstActivitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inst_activities');
+        Schema::dropIfExists('services');
     }
 }
