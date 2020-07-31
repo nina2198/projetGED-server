@@ -2,7 +2,7 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Schema;
+use App\Models\Schema\Schema;
 use Faker\Generator as Faker;
 
 $factory->define(Schema::class, function (Faker $faker) {

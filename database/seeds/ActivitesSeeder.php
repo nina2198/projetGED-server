@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Activites;
+use App\Models\Activity\Activites;
 
 class ActivitesSeeder extends Seeder
 {
@@ -12,6 +12,6 @@ class ActivitesSeeder extends Seeder
      */
     public function run(\Faker\Generator $faker)
     {
-        factory('App\Activite', 5)->create();
+        factory('App\Models\Activity\Activites', 5)->create();
     }
 }

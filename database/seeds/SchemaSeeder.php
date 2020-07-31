@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Models\Schema\Schema;
 
 class SchemaSeeder extends Seeder
 {
@@ -11,6 +12,6 @@ class SchemaSeeder extends Seeder
      */
     public function run()
     {
-        factory('App\Schema', 5)->create();
+        factory('App\Models\Schema\Schema', 5)->create();
     }
 }

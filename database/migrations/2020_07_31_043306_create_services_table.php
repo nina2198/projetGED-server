@@ -15,7 +15,7 @@ class CreateServicesTable extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->unsignedBigInteger('idService');
-            $table->strring('nomService');
+            $table->string('nomService');
             $table->timestamps();
             //constrainst
             $table->primary(['idService']) ;

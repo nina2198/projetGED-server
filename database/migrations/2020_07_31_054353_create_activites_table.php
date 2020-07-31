@@ -14,8 +14,13 @@ class CreateActivitesTable extends Migration
     public function up()
     {
         Schema::create('activites', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('idActivite');
+            $table->unsignedBigInteger('idService');
+            $table->string('description')->nullable();
             $table->timestamps();
+
+            $table->foreign('idService')->references('idService')->on('services');
+            $table->primary(['idActivite']);
         });
     }
 

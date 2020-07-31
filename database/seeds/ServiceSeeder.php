@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Model\Service\Service;
 
 class ServiceSeeder extends Seeder
 {
@@ -11,6 +12,6 @@ class ServiceSeeder extends Seeder
      */
     public function run()
     {
-        factory('App\Service', 15)->create();
+        factory('App\Model\Service\Service', 15)->create();
     }
 }

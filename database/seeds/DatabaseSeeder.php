@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
       
       //module Activites
       $this->call([
-            ActivitesSeeder::class
+            ActivitesSeeder::class,
       ]);
 
         Schema::enableForeignKeyConstraints();

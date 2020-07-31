@@ -2,12 +2,12 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Service;
+use  App\Models\Service\Service;
 use Faker\Generator as Faker;
 
 $factory->define(Service::class, function (Faker $faker) {
     return [
-        'nomService'=> $faker->unique()->company,
+        'nomService'=> $faker->unique()->name
         
     ];
 });

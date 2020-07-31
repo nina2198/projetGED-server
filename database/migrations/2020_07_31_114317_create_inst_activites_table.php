@@ -17,13 +17,13 @@ class CreateInstActivitesTable extends Migration
             $table->unsignedBigInteger('idSchema');
             $table->unsignedBigInteger('idActivite');
             $table->unsignedBigInteger('idUser');
-            $table->enum('status', ['WAITING', 'HANGING', 'ENDING', 'EXECUTION'])->default('PENDING');
+            $table->enum('status', ['WAITING', 'HANGING', 'ENDING', 'EXECUTION'])->default('WAITING');
             // EN ATTENTE, SUSPENDUE, TERMINAISON, EN EXECUTION
             $table->timestamps();
             
-            $table->foreign('idSchema')->reference('idSchema')->on('schema');
-            $table->foreign('idActivite')->reference('idActivite')->on('activites');
-            $table->foreign('idUser')->reference('id')->on('users');
+            $table->foreign('idSchema')->references('idSchema')->on('schemas');
+            $table->foreign('idActivite')->references('idActivite')->on('activites');
+            $table->foreign('idUser')->references('id')->on('users');
             $table->primary(['idActivite', 'idSchema', 'idUser']);
         });
     }

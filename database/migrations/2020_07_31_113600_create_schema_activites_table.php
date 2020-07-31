@@ -14,15 +14,14 @@ class CreateSchemaActivitesTable extends Migration
     public function up()
     {
         Schema::create('schema_activites', function (Blueprint $table) {
-            $table->unsignedBigInteger('idSchema');
+            $table->unsignedBigInteger('idSchemaActivites');
             $table->unsignedBigInteger('idActivite');
             $table->unsignedBigInteger('ordrePlacement');
             $table->timestamps();
             
-            $table->foreign('idSchema')->reference('idSchema')->on('schema');
-            $table->foreign('idActivite')->reference('idActivite')->on('activites');
-            $table->primary(['idSchema', 'idActivite']);
-            $table->softDeletes();
+            $table->foreign('idSchemaActivites')->references('idSchema')->on('schemas');
+            $table->foreign('idActivite')->references('idActivite')->on('activites');
+            $table->primary(['idSchemaActivites', 'idActivite']);
         });
     }
 
