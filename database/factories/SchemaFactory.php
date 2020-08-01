@@ -7,8 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Schema::class, function (Faker $faker) {
     return [
-        'nomSchema'=> $faker->unique()->text(20),
-        'description'=> $faker->sentence(),
-        'nbreService'=> $faker->numberBetween(2, 8),
+        'id'=> $faker->unique()->numberBetween(2, 8),
+        'service_number'=> $faker->numberBetween(2, 8),
     ];
 });

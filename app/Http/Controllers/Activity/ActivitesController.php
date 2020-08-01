@@ -15,14 +15,13 @@ class ActivitesController extends Controller
     /**
      * Donne la liste des activites possibles d'un service
      */
-    public function index()
+    public function index(Request $req)
     {
-        $idserv = /*sessionScope('idService')*/ 2 ;
+        $activity = Activites::simplePaginate($req->has('limit') ? $req->limit : 15)
+        ->pluck('idActivite', 'idService')
+        ->where('idActivite', '<', 19);
 
-        $activite = DB::table('activites')->where('idService', $idserv)
-                    ->sharedLock()
-                    ->get();
-      
+        dd(response()->json($activity));
         return $activite; 
     }
 
