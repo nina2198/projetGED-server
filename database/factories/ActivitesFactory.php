@@ -7,7 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Activites::class, function (Faker $faker) {
     return [
-        'idService' => $faker->number,
+        'idService'=> $faker->numberBetween(1, 20), 
         'description' => $faker->unique()->text(30),
     ];
 });

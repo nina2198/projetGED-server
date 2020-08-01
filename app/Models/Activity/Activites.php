@@ -3,10 +3,11 @@
 namespace App\Models\Activity;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Service\Service ;
 
 class Activites extends Model
 {
-    protected $guarded = [];
+   // protected $guarded = [];
     protected $fillable = [
         'idService', 'description', 
     ];

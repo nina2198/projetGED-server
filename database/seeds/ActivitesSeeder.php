@@ -12,6 +12,6 @@ class ActivitesSeeder extends Seeder
      */
     public function run(\Faker\Generator $faker)
     {
-        factory('App\Models\Activity\Activites', 5)->create();
+        factory('App\Models\Activity\Activites', 20)->create();
     }
 }

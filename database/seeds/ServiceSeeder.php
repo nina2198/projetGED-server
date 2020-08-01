@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Model\Service\Service;
+use App\Models\Service\Service;
 
 class ServiceSeeder extends Seeder
 {
@@ -10,8 +10,10 @@ class ServiceSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(\Faker\Generator $faker)
     {
-        factory('App\Model\Service\Service', 15)->create();
+        factory(Service::class, 20)->make()->each(function ($service) use ($faker) {
+            $service->save();
+        });
     }
 }

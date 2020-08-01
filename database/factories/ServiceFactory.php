@@ -7,7 +7,6 @@ use Faker\Generator as Faker;
 
 $factory->define(Service::class, function (Faker $faker) {
     return [
-        'nomService'=> $faker->unique()->name
-        
+        'nomService'=> $faker->unique()->company,
     ];
 });

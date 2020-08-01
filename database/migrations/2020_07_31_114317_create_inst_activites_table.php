@@ -14,17 +14,14 @@ class CreateInstActivitesTable extends Migration
     public function up()
     {
         Schema::create('inst_activites', function (Blueprint $table) {
-            $table->unsignedBigInteger('idSchema');
+            $table->bigIncrements('idInstActivite');
             $table->unsignedBigInteger('idActivite');
             $table->unsignedBigInteger('idUser');
             $table->enum('status', ['WAITING', 'HANGING', 'ENDING', 'EXECUTION'])->default('WAITING');
             // EN ATTENTE, SUSPENDUE, TERMINAISON, EN EXECUTION
-            $table->timestamps();
-            
-            $table->foreign('idSchema')->references('idSchema')->on('schemas');
+            $table->timestamps(); 
             $table->foreign('idActivite')->references('idActivite')->on('activites');
             $table->foreign('idUser')->references('id')->on('users');
-            $table->primary(['idActivite', 'idSchema', 'idUser']);
         });
     }
 

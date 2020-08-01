@@ -8,11 +8,11 @@ class Service extends Model
 {
     protected $guarded = [];
     protected $fillable = [
-        'nomService',
+        'idService', 'nomService',
     ];
 
     //definition des relations 
-    public function activity()
+    public function activities()
     {
         return $this->hasMany('App\Models\Activity\Activites');
     }

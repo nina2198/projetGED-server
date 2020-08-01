@@ -12,10 +12,10 @@ class FileSeeder extends Seeder
      */
     public function run(\Faker\Generator $faker)
     {
-        factory(File::class, 10)->make()->each(function ($file) use ($faker) {
+       /* factory(File::class, 10)->make()->each(function ($file) use ($faker) {
             $folders = App\Models\Folder\Folder::all();
             $file->folder_id = $faker->randomElement($folders)->id;
             $file->save();
-        });
+        });*/
     }
 }

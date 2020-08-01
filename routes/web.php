@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Service\Service;
+use Illuminate\Controllers\Controller;
+use App\Http\Controllers\Activity;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +16,8 @@ use App\Models\Service\Service;
 |
 */
 
+Route::get('/home', 'Activity\InstActivitesController@index_hanging');
+
 Route::get('/', function () {
-    $service = factory('App\Models\Service\Service',1)->create();
-    dd($service->nomService) ;
-    return view('welcome');
+    return view('/welcome');
 });
