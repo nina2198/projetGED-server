@@ -14,11 +14,11 @@ class CreateSchemasTable extends Migration
     public function up()
     {
         Schema::create('schemas', function (Blueprint $table) {
-            $table->bigIncrements('idSchema');
-            $table->string('nomSchema');
-            $table->text('description');
-            $table->unsignedBigInteger('nbreService');
+            $table->unsignedBigInteger('id');
+            $table->unsignedBigInteger('service_number');
             $table->timestamps();
+
+            $table->foreign('id')->references('id')->on('folder_types');
         });
     }
 

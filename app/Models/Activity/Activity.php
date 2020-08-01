@@ -5,12 +5,9 @@ namespace App\Models\Activity;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Service\Service ;
 
-class Activites extends Model
+class Activity extends Model
 {
-   // protected $guarded = [];
-    protected $fillable = [
-        'idService', 'description', 
-    ];
+    protected $guarded = [];
 
     //definition des relations
     public function service()

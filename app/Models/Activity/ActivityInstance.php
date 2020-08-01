@@ -7,11 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class InstActivites extends Model
 {
     protected $guarded = [];
-    protected $fillable = [
-        'idActivity',
-        'idUser',
-        'status',
-    ];
 
     public function getStatus($status)
     {

@@ -8,6 +8,6 @@ class Schema extends Model
 {
     protected $guarded = [];
     protected $fillable = [
-        'nomSchema', 'description', 'nbreService',
+        'id', 'service_number',
     ];
 }
