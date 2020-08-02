@@ -31,7 +31,7 @@ class ActivityInstancesController extends Controller
             }
             return response()->json($activityInstance);
         }
-    
-    
 
+
+        
 }

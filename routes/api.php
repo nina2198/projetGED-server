@@ -111,4 +111,15 @@ Route::group(['prefix' => 'activities'], function(){
 Route::group(['prefix' => 'activity_instances'], function(){
     Route::get('/', 'Activity\ActivityInstancesController@index') ;
     Route::get('/{id}', 'Activity\ActivityInstancesController@find');
+    Route::get('/test/{id}', 'Activity\ActivityInstancesController@teste');
+});
+ // Service module : 'middleware' => 'auth:api',
+ Route::group(['prefix' => 'Service'], function () {
+    Route::get('/', 'Service\ServiceController@index');
+    Route::get('/find/{id}', 'Service\ServiceController@find');
+    Route::get('/search', 'Service\ServiceController@search');
+    Route::delete('/destroy/{id}', 'Service\ServiceController@destroy');
+    Route::put('/update/{id}', 'Service\ServiceController@update');
+    Route::post('/create', 'Service\ServiceController@store');
+
 });
