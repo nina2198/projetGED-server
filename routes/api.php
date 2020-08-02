@@ -99,3 +99,13 @@ Route::group(['prefix' => 'folders'], function () {
     });
 
 });
+ // Service module : 'middleware' => 'auth:api',
+ Route::group(['prefix' => 'Service'], function () {
+    Route::get('/', 'Service\ServiceController@index');
+    Route::get('/find/{id}', 'Service\ServiceController@find');
+    Route::get('/search', 'Service\ServiceController@search');
+    Route::delete('/destroy/{id}', 'Service\ServiceController@destroy');
+    Route::put('/update/{id}', 'Service\ServiceController@update');
+    Route::post('/create', 'Service\ServiceController@store');
+
+});

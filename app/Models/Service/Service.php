@@ -3,6 +3,7 @@
 namespace App\Models\Service;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Service\Service;
 
 class Service extends Model
 {
