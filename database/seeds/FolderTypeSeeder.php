@@ -12,8 +12,8 @@ class FolderTypeSeeder extends Seeder
      */
     public function run(\Faker\Generator $faker)
     {
-       /* factory(FolderType::class, 10)->make()->each(function ($folder_type) use ($faker) {
+        factory(FolderType::class, 10)->make()->each(function ($folder_type) use ($faker) {
             $folder_type->save();
-        });*/
+        });
     }
 }

@@ -15,7 +15,7 @@ class CreateFoldersTable extends Migration
     {
         Schema::create('folders', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->text('name')->unique();
+            $table->string('name')->unique();
             $table->text('description');
             $table->enum('status', ['ACCEPTED', 'PENDING', 'REJECTED', 'ARCHIVED'])->default('PENDING');
             $table->integer('track_id')->unique();

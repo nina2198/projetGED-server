@@ -31,6 +31,7 @@ $factory->define(User::class, function (Faker $faker) {
         'gender' => $faker->randomElement(['F', 'M']),
         'password' => bcrypt('pwd'),
         'remember_token' => Str::random(10),
+        
     ];
 
 });
