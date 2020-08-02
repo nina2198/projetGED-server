@@ -18,6 +18,7 @@ class AddRelationBetweenRolesAndPermissionsTable extends Migration
             $table->unsignedBigInteger('permission_id');
             $table->unsignedBigInteger('role_id');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('permission_id')->references('id')->on('permissions')
                 ->onUpdate('cascade')->onDelete('cascade');

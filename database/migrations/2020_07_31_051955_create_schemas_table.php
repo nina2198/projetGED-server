@@ -14,11 +14,12 @@ class CreateSchemasTable extends Migration
     public function up()
     {
         Schema::create('schemas', function (Blueprint $table) {
-            $table->bigIncrements('idSchema');
-            $table->string('nomSchema');
+            $table->bigIncrements('id');
+            $table->string('name');
             $table->text('description');
-            $table->unsignedBigInteger('nbreService');
+            $table->unsignedBigInteger('nombre_service');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
