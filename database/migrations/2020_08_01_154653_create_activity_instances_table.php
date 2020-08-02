@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateActivitiesInstancesTable extends Migration
+class CreateActivityInstancesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateActivitiesInstancesTable extends Migration
      */
     public function up()
     {
-        Schema::create('activities_instances', function (Blueprint $table) {
+        Schema::create('activity_instances', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('activity_id');
             $table->unsignedBigInteger('user_id');
@@ -32,6 +32,6 @@ class CreateActivitiesInstancesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('activities_instances');
+        Schema::dropIfExists('activity_instances');
     }
 }

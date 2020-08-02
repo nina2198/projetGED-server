@@ -99,3 +99,16 @@ Route::group(['prefix' => 'folders'], function () {
     });
 
 });
+
+
+Route::group(['prefix' => 'activities'], function(){
+    Route::get('/', 'Activity\ActivitiesController@index');
+    Route::post('/create', 'Activity\ActivitiesController@create');
+    Route::get('/{id}', 'Activity\ActivitiesController@find') ;
+    Route::match(['post', 'put'], '/{id}', 'Activity\ActivitiesController@update') ;
+});
+
+Route::group(['prefix' => 'activity_instances'], function(){
+    Route::get('/', 'Activity\ActivityInstancesController@index') ;
+    Route::get('/{id}', 'Activity\ActivityInstancesController@find');
+});

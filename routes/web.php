@@ -16,7 +16,6 @@ use App\Http\Controllers\Activity;
 |
 */
 
-Route::get('/home', 'Activity\ActivitesController@index');
 
 Route::get('/', function () {
     return view('/welcome');
