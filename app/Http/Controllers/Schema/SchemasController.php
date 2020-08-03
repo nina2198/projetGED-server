@@ -91,19 +91,6 @@ class SchemasController extends Controller
     {
         //
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Schema\Schema  $schema
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Schema $schema)
-    {
-        //
-    }
-
     /**
      * Remove the specified resource from storage.
      *
