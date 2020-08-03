@@ -10,13 +10,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection\stdClass;
 use App\Models\APIError;
+use Illuminate\Pagination\Paginator;
 
 
 class ActivitiesController extends Controller
 {
     /**
-     * Donne la liste des activites possibles d'un service
-     * OK
+     * @author Ulrich Bertrand
+     * return all the activity of all Service
      */
     public function index(Request $req)
     {
@@ -24,7 +25,8 @@ class ActivitiesController extends Controller
         return response()->json($activity); 
     }
     /**
-     * permet de creer une nouvelle activites.
+     * @author Ulrich Bertrand
+     * Create the new activity.
      * OK
      */
     public function create(Request $req)
@@ -48,8 +50,12 @@ class ActivitiesController extends Controller
         
     }
     
-    //rechercher une activité à partir de son id   OK
-    public function find($id) {
+    /**
+     * @author Ulrich Bertrand
+     * Find the activity
+     */
+    public function find($id) 
+    {
         if(!$activity = Activity::find($id)) {
             $apiError = new APIError;
             $apiError->setStatus("404");
@@ -60,7 +66,8 @@ class ActivitiesController extends Controller
         return response()->json($activity);
     }
     /**
-     * changer la description d'une activité
+     * @author Ulrich Bertrand
+     * Change the description for the activity
      * OK
      */
     public function update(Request $req, $id)
@@ -78,6 +85,58 @@ class ActivitiesController extends Controller
             $activity->description = $data['description'];
         $activity->update();
         return response()->json($activity);
-}
+    }
+
+/**
+ * 
+ * 
+ * THE ODERS METHODS WILL CAN USE 
+ */
+
+    /**
+     * @author Ulrich Bertrand
+     * Get the instances for the activity
+     */
+    public function activities_instances(Request $req, $id)
+    {
+        //activitiesInstances : function define in the  model activity 
+        $activityInstances = Activity::simplePaginate($req->has('limit') ? $req->limit : 15)->find($id)->activitiesInstances;
+                              
+        return response()->json($activityInstances);
+    }
+
+    /**
+     * @author Ulrich Bertrand
+     * Get the service for the activity
+     */
+    public function service(Request $req, $id)
+    {
+        //service : the method defiine in the  model activity 
+        $service = Activity::find($id)->service;
+                              
+        return response()->json($service);
+    }
+
+    /**
+     * @author Ulrich Bertrand
+     * search the activity where description name as
+     */
+    public function search(Request $req)
+    {
+        $limit = $req->limit ;
+        $search = $req->search ;
+        $page = $req->page ;
+
+        $activities = Activity::where('description', 'LIKE', '%'.$search.'%')->paginate($limit) ;
+        return response()->json($activities);
+    }
+
+    public function join(Request $req){
+        $activities = Activity::select('activities.*')
+            ->join('services', 'activities.service_id', '=', 'services.id')
+            ->get();
+
+        return response()->json($activities);
+    }
 
 }

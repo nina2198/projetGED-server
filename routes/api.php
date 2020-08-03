@@ -36,6 +36,11 @@ Route::group(['prefix' => 'persons'], function () {
         Route::post('/', 'Person\UserController@create');
         Route::delete('/{id}', 'Person\UserController@destroy');
         Route::match(['post', 'put'],'/{id}', 'Person\UserController@update');
+        /** @author Ulrich Bertrand*/
+        Route::get('/status/{id}', 'Person\UserController@instances_waiting');
+        Route::get('/status/{id}', 'Person\UserController@instances_hanging');
+
+        /** */
     });
 
     Route::group(['prefix' => 'permissions'], function () {
@@ -103,15 +108,22 @@ Route::group(['prefix' => 'folders'], function () {
 
 Route::group(['prefix' => 'activities'], function(){
     Route::get('/', 'Activity\ActivitiesController@index');
+    Route::get('/j', 'Activity\ActivitiesController@join');
     Route::post('/create', 'Activity\ActivitiesController@create');
     Route::get('/{id}', 'Activity\ActivitiesController@find') ;
     Route::match(['post', 'put'], '/{id}', 'Activity\ActivitiesController@update') ;
+    Route::get('/inst/{id}', 'Activity\ActivitiesController@activities_instances');
+    Route::get('/service/{id}', 'Activity\ActivitiesController@service');
+
 });
 
 Route::group(['prefix' => 'activity_instances'], function(){
     Route::get('/', 'Activity\ActivityInstancesController@index') ;
     Route::get('/{id}', 'Activity\ActivityInstancesController@find');
-    Route::get('/test/{id}', 'Activity\ActivityInstancesController@teste');
+    Route::get('/activity/{id}', 'Activity\ActivityInstancesController@activity');
+    Route::get('/user/{id}', 'Activity\ActivityInstancesController@user');
+
+
 });
  // Service module : 'middleware' => 'auth:api',
  Route::group(['prefix' => 'Service'], function () {
@@ -121,5 +133,6 @@ Route::group(['prefix' => 'activity_instances'], function(){
     Route::delete('/destroy/{id}', 'Service\ServiceController@destroy');
     Route::put('/update/{id}', 'Service\ServiceController@update');
     Route::post('/create', 'Service\ServiceController@store');
-
+    Route::get('/activities/{id}', 'Service\ServiceController@activities');
+    Route::get('/u/{id}', 'Service\ServiceController@users');
 });

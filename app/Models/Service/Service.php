@@ -14,4 +14,9 @@ class Service extends Model
     {
         return $this->hasMany('App\Models\Activity\Activity');
     }
+
+    public function users()
+    {
+        return $this->hasMany('App\Models\Person\User');
+    }
 }

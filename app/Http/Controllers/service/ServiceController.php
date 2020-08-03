@@ -159,4 +159,29 @@ class ServiceController extends Controller
         }
         return response()->json($service);
     }
+
+    /**
+     * @author Ulrich Bertrand
+     * Get all the activity for the service
+     */
+    public function activities(Request $req, $id)
+    {
+        //activitiesInstances : function define in the  model activity 
+        $activities = Service::simplePaginate($req->has('limit') ? $req->limit : 15)->find($id)->activities;
+                              
+        return response()->json($activities);
+    }
+
+     /**
+     * @author Ulrich Bertrand
+     * Get all the activity for the service
+     */
+    public function users(Request $req, $id)
+    {
+        //activitiesInstances : function define in the  model activity 
+        $activities = Service::simplePaginate($req->has('limit') ? $req->limit : 15)->find($id)->users;
+                              
+        return response()->json($activities);
+    }
+
 }

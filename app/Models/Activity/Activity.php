@@ -15,10 +15,12 @@ class Activity extends Model
      //une activitté est creer pour un service
     public function service()
     {
-        return $this->belongsTo('App\Models\Service\Service');
+        return $this->belongsTo('App\Models\Service\Service', 'service_id');
     }
 
-    //une activité peut avoir plusieurs instances en executions
+    /**
+     * Get the instances for the activity
+     */
     public function activitiesInstances()
     {
         return $this->hasMany('App\Models\Activity\ActivityInstance');

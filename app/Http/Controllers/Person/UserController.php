@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Person\User;
 use App\Models\APIError;
+use Illuminate\Support\Collection;
 
 class UserController extends Controller
 {
@@ -141,4 +142,28 @@ class UserController extends Controller
    // $permission_user = PermissionUser::whereUserIdAndPermissionId($user_id, $permission_id)->first();
    // if($permission_user) //creer une apiError avec code 400 badREquest
    // je cree les relations
+
+   /**
+    * @author Ulrich Bertrand
+    *Get all the work( the instances of activity) who is waiting for treatment for this users
+    */
+   public function instances_waiting(Request $req, $id){
+        $activityInstances = User::simplePaginate($req->has('limit') ? $req->limit : 15)
+        ->find($id)->activitiesInstances
+        ->where('status','WAITING') ;
+                              
+        return response()->json($activityInstances);
+   }
+
+   /**
+    * @author Ulrich Bertrand
+    *Get all the work( the instances of activity) who is Hanging for treatment for this user
+    */
+    public function instances_hanging(Request $req, $id){
+        $activityInstances = User::simplePaginate($req->has('limit') ? $req->limit : 15)
+        ->find($id)->activitiesInstances
+        ->where('status','HANGING');
+                              
+        return response()->json($activityInstances);
+   }
 }

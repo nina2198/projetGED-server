@@ -18,10 +18,12 @@ class ActivityInstance extends Model
         ][$status];
     }
 
-    //une instance d'activité est creer sous la base d'un service
+    /**
+     * Get the activity for this instance
+     */
     public function activity()
     {
-        return $this->belongsTo('App\Models\Activity\Activity');
+        return $this->belongsTo('App\Models\Activity\Activity','activity_id');
     }
 
     //une instance d'activité est effectuée par l'admin du service
