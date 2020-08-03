@@ -42,12 +42,12 @@ class DatabaseSeeder extends Seeder
 
         //module Serice
         $this->call([
-            ServiceSeeder::class
+            //ServiceSeeder::class
         ]);
       
       //module Activites
       $this->call([
-            ActivitesSeeder::class,
+            ActivitySeeder::class,
       ]);
 
         Schema::enableForeignKeyConstraints();
