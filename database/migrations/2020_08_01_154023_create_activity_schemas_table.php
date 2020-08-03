@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateActivitiesSchemaTable extends Migration
+class CreateActivitySchemasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -18,7 +18,6 @@ class CreateActivitiesSchemaTable extends Migration
             $table->unsignedBigInteger('activity_id');
             $table->unsignedBigInteger('activity_order');
             $table->timestamps();
-            $table->softDeletes();
             
             $table->foreign('id')->references('id')->on('schemas');
             $table->foreign('activity_id')->references('id')->on('activities');
