@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
 
         //module Serice
         $this->call([
-            //ServiceSeeder::class
+            ServiceSeeder::class
         ]);
       
       //module Activites
