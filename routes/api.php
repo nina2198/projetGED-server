@@ -136,3 +136,7 @@ Route::group(['prefix' => 'activity_instances'], function(){
     Route::get('/activities/{id}', 'Service\ServiceController@activities');
     Route::get('/u/{id}', 'Service\ServiceController@users');
 });
+
+Route::group(['prefix' => 'schemas'], function () {
+    Route::post('/', 'Activity\ActivitySchemasController@create');
+});

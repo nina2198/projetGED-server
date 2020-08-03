@@ -24,9 +24,8 @@ class CreateActivitySchemasTable extends Migration
             $table->primary(['id', 'activity_id']);
         });
     }
-
     /**
-     * Reverse the migrations.
+     * Reverse the migrations 
      *
      * @return void
      */
