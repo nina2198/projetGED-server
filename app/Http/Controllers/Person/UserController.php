@@ -139,6 +139,22 @@ class UserController extends Controller
         return response()->json(null);
     }
 
+    public function getUserRolesAndPermisssions($id) {
+        $user = new User();
+        if(!$user = User::find($id)) {
+            $apiError = new APIError();
+            $apiError->setStatus("404");
+            $apiError->setCode("USER_NOT_FOUND");
+            $apiError->setMessage("l'utiisateur d'id $id n'existe pas");
+            return response()->json($apiError, 404);
+        }
+        $user->roles;
+        foreach($user->roles as $role) {
+            $role->permissions;
+        }
+        return response()->json($user);
+    }
+
    // $permission_user = PermissionUser::whereUserIdAndPermissionId($user_id, $permission_id)->first();
    // if($permission_user) //creer une apiError avec code 400 badREquest
    // je cree les relations
