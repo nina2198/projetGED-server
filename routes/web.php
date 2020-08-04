@@ -15,9 +15,3 @@ use App\Http\Controllers\Activity;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/home', 'Activity\InstActivitesController@index_hanging');
-
-Route::get('/', function () {
-    return view('/welcome');
-});
