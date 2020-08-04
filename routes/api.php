@@ -131,7 +131,7 @@ Route::group(['prefix' => 'activity_instances'], function(){
     Route::get('/find/{id}', 'Service\ServiceController@find');
     Route::get('/search', 'Service\ServiceController@search');
     Route::delete('/destroy/{id}', 'Service\ServiceController@destroy');
-    Route::put('/update/{id}', 'Service\ServiceController@update');
+    Route::match(['post', 'put'],'/update/{id}', 'Service\ServiceController@update');
     Route::post('/create', 'Service\ServiceController@store');
     Route::get('/activities/{id}', 'Service\ServiceController@activities');
     Route::get('/u/{id}', 'Service\ServiceController@users');
