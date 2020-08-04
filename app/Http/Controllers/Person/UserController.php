@@ -8,6 +8,11 @@ use App\Models\Person\User;
 use App\Models\APIError;
 use Illuminate\Support\Collection;
 
+ /**
+    * @author Nguedia Daniela
+    *Get all the work( the instances of activity) who is Hanging for treatment for this user
+    */
+
 class UserController extends Controller
 {
     public function index(Request $req)

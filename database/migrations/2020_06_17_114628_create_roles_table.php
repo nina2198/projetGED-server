@@ -8,7 +8,7 @@ class CreateRolesTable extends Migration
 {
     /**
      * Run the migrations.
-     *
+     * @author Nguedia Daniela
      * @return void
      */
     public function up()
