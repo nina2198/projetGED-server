@@ -46,7 +46,7 @@ class AuthController extends Controller
                 ],
                 'user' => $user,
                 'roles' => $user->roles,
-                'permissions' => $user->allPermissions()
+                'permissions' => $user->permissions
             ]);
         } else {
             $unauthorized = new APIError;

@@ -34,16 +34,17 @@ class UserController extends Controller
             'first_name' => 'required',
             'last_name' => 'required',
             'password' => 'required',
+            'job' => 'required|in:VISITOR, EMPLOYEE, ADMINISTRATOR, SUPERADMIN',
             'login' => 'required|unique:users',
-            'email' => ['required', 'email', Rule::unique('users', 'email')]
+            'email' => 'required|unique:users'
         ]);
        
         $data['password'] = bcrypt($data['password']);
         $data['avatar'] = '';
         //upload image
         if ($file = $req->file('avatar')) {
-            $filePaths = $this->uploadSingleFile($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif']);
-            $data['avatar'] = json_encode($filePaths);
+            $filePath = $this->uploadSingleFile($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif,jpeg']);
+            $data['avatar'] = $filePath['saved_file_path'];
         }
         $user = new User();
         $user->login = $data['login'];
@@ -58,6 +59,8 @@ class UserController extends Controller
             $user->birth_date = $data['birth_date'];
         if (isset($data['birth_place'])) 
             $user->birth_place = $data['birth_place'];
+        if (isset($data['service_id'])) 
+            $user->service_id = $data['service_id'];
         $user->save();
 
         return response()->json($user);
@@ -95,8 +98,8 @@ class UserController extends Controller
 
         //upload image
         if ($file = $req->file('avatar')) {
-            $filePaths = $this->uploadMultipleFiles($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif']);
-            $data['avatar'] = json_encode($filePaths);
+            $filePath = $this->uploadSingleFile($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif,jpeg']);
+            $data['avatar'] = $filePath['saved_file_path'];
         }
 
         if (isset($data['login'])) 
