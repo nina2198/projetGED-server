@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Person\User;
 use App\Models\APIError;
-use Illuminate\Support\Collection;
+use App\Helpers\Helper;
 
 class UserController extends Controller
 {
@@ -185,4 +185,27 @@ class UserController extends Controller
                               
         return response()->json($activityInstances);
    }
+
+   public function reinitializePassword(Request $req) {
+    $data = $req->only(['email']);
+    $user = User::whereEmail($data['email'])->first();
+    if(!$user) {
+        $apiError = new APIError;
+        $apiError->setStatus("404");
+        $apiError->setCode("EMAIL_NOT_FOUND");
+        $apiError->setMessage("L'adresse email " . $data['email'] . "n'existe pas");
+        return response()->json($apiError, 404);
+    }
+
+    $password = Helper::generate_password();
+    $user->password = bcrypt($password);
+    $user->update();
+
+    Helper::send_password_to_user($user, $password);
+
+    $success['status'] = true;
+    $success['password'] = $password;
+    return response()->json($success);
+}
+
 }

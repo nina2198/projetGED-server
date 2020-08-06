@@ -36,11 +36,10 @@ Route::group(['prefix' => 'persons'], function () {
         Route::post('/', 'Person\UserController@create');
         Route::delete('/{id}', 'Person\UserController@destroy');
         Route::match(['post', 'put'],'/{id}', 'Person\UserController@update');
-        /** @author Ulrich Bertrand*/
         Route::get('/status/{id}', 'Person\UserController@instances_waiting');
         Route::get('/status/{id}', 'Person\UserController@instances_hanging');
+        Route::post('/reset-password', 'Person\UserController@reinitializePassword');
 
-        /** */
     });
 
     Route::group(['prefix' => 'permissions'], function () {
