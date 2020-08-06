@@ -36,11 +36,10 @@ Route::group(['prefix' => 'persons'], function () {
         Route::post('/', 'Person\UserController@create');
         Route::delete('/{id}', 'Person\UserController@destroy');
         Route::match(['post', 'put'],'/{id}', 'Person\UserController@update');
-        /** @author Ulrich Bertrand*/
         Route::get('/status/{id}', 'Person\UserController@instances_waiting');
         Route::get('/status/{id}', 'Person\UserController@instances_hanging');
+        Route::post('/reset-password', 'Person\UserController@reinitializePassword');
 
-        /** */
     });
 
     Route::group(['prefix' => 'permissions'], function () {
@@ -131,7 +130,7 @@ Route::group(['prefix' => 'activity_instances'], function(){
     Route::get('/find/{id}', 'Service\ServiceController@find');
     Route::get('/search', 'Service\ServiceController@search');
     Route::delete('/destroy/{id}', 'Service\ServiceController@destroy');
-    Route::put('/update/{id}', 'Service\ServiceController@update');
+    Route::match(['post', 'put'],'/update/{id}', 'Service\ServiceController@update');
     Route::post('/create', 'Service\ServiceController@store');
     Route::get('/activities/{id}', 'Service\ServiceController@activities');
     Route::get('/u/{id}', 'Service\ServiceController@users');

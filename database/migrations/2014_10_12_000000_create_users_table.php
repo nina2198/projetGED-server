@@ -24,17 +24,19 @@ class CreateUsersTable extends Migration
             $table->date('birth_date')->nullable();
             $table->string('birth_place')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('job')->nullable();
+            $table->enum('job',['VISITOR', 'EMPLOYEE', 'ADMINISTRATOR', 'SUPERADMIN']);;
             $table->string('tel')->nullable();
             $table->string('language')->nullable();
             $table->enum('gender',['F', 'M']);
+            $table->unsignedBigInteger('service_id')->nullable();
             $table->timestamp('last_login')->nullable();
             $table->string('signature')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
 
-           // $table->foreign('service_id')->references('id')->on('services')->nullable();
+            $table->foreign('service_id')->references('id')->on('services')
+                ->onUpdate('cascade')->onDelete('cascade');
         });
         
     }
