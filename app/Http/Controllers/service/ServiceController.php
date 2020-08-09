@@ -17,10 +17,10 @@ class ServiceController extends Controller
    }
 
     
-    public function create(){ }
+    public function store(){ }
 
 
-    public function store(Request $req)
+    public function create(Request $req)
     {
         $data = $req->only('name');
 
@@ -160,9 +160,9 @@ class ServiceController extends Controller
     public function users(Request $req, $id)
     {
         //activitiesInstances : function define in the  model activity 
-        $activities = Service::simplePaginate($req->has('limit') ? $req->limit : 15)->find($id)->users;
+        $users = Service::simplePaginate($req->has('limit') ? $req->limit : 15)->find($id)->users;
                               
-        return response()->json($activities);
+        return response()->json($users);
     }
 
 }

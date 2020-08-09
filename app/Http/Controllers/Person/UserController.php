@@ -55,6 +55,8 @@ class UserController extends Controller
         $user->last_name = $data['last_name'];
         if (isset($data['avatar'])) 
             $user->avatar = $data['avatar'];
+        if (isset($data['tel'])) 
+            $user->avatar = $data['tel'];
         if (isset($data['birth_date'])) 
             $user->birth_date = $data['birth_date'];
         if (isset($data['birth_place'])) 

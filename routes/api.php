@@ -136,13 +136,13 @@ Route::group(['prefix' => 'activity_instances'], function(){
 
 });
  // Service module : 'middleware' => 'auth:api',
- Route::group(['prefix' => 'Service'], function () {
+ Route::group(['prefix' => 'services'], function () {
     Route::get('/', 'Service\ServiceController@index');
-    Route::get('/find/{id}', 'Service\ServiceController@find');
+    Route::get('/{id}', 'Service\ServiceController@find');
     Route::get('/search', 'Service\ServiceController@search');
-    Route::delete('/destroy/{id}', 'Service\ServiceController@destroy');
+    Route::delete('/{id}', 'Service\ServiceController@destroy');
     Route::match(['post', 'put'],'/update/{id}', 'Service\ServiceController@update');
-    Route::post('/create', 'Service\ServiceController@store');
+    Route::post('/', 'Service\ServiceController@create');
     Route::get('/activities/{id}', 'Service\ServiceController@activities');
     Route::get('/u/{id}', 'Service\ServiceController@users');
 });
