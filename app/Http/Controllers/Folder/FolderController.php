@@ -19,6 +19,13 @@ class FolderController extends Controller
         return response()->json($data);
     }
 
+    // Retourner tout les dossiers d'un utilisateur donne
+    public function getUserFolders(Request $req, $id)
+    {
+        $data = Folder::whereUserId($id)->orderBy('created_at', 'desc')->get();
+        return response()->json($data);
+    }
+
     // Rechercher une occurence d'un attribut du dossier
     public function search(Request $req)
     {
@@ -88,6 +95,19 @@ class FolderController extends Controller
         return response()->json($folder);
     }
 
+    // Rechercher un dossier par son track-id
+    public function findByTrackId($track_id) {
+        if(!$folder = Folder::whereTrackId($track_id)->first()) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode("FOLDER_NOT_FOUND");
+            $apiError->setMessage("Le dossier de track_id $track_id n'existe pas");
+            return response()->json($apiError, 404);
+        }
+
+        return response()->json($folder);
+    }
+
     // Faire la mise à jour d'un dossier
     public function update(Request $req, $id)
     {
@@ -128,4 +148,41 @@ class FolderController extends Controller
 
         return response()->json(null);
     }
+
+    public function getAcceptedFolders($user_id) {
+        $data = Folder::select('folders.*', 'folder_types.id as folder_type_id', 'folder_types.name as folder_type_name', 'folder_types.file_number')
+            ->join('folder_types', 'folder_types.id', '=', 'folders.folder_type_id')
+            ->where(['folders.user_id' => $user_id, 'folders.status' => 'ACCEPTED'])
+            ->orderBy('folders.created_at', 'desc')
+            ->get();
+        return response()->json($data);
+    }
+
+    public function getPendingFolders($user_id) {
+        $data = Folder::select('folders.*', 'folder_types.id as folder_type_id', 'folder_types.name as folder_type_name', 'folder_types.file_number')
+            ->join('folder_types', 'folder_types.id', '=', 'folders.folder_type_id')
+            ->where(['folders.user_id' => $user_id, 'folders.status' => 'PENDING'])
+            ->orderBy('folders.created_at', 'desc')
+            ->get();
+        return response()->json($data);
+    }
+
+    public function getRejectedFolders($user_id) {
+        $data = Folder::select('folders.*', 'folder_types.id as folder_type_id', 'folder_types.name as folder_type_name', 'folder_types.file_number')
+            ->join('folder_types', 'folder_types.id', '=', 'folders.folder_type_id')
+            ->where(['folders.user_id' => $user_id, 'folders.status' => 'REJECTED'])
+            ->orderBy('folders.created_at', 'desc')
+            ->get();
+        return response()->json($data);
+    }
+
+    public function getArchivedFolders($user_id) {
+        $data = Folder::select('folders.*', 'folder_types.id as folder_type_id', 'folder_types.name as folder_type_name', 'folder_types.file_number')
+            ->join('folder_types', 'folder_types.id', '=', 'folders.folder_type_id')
+            ->where(['folders.user_id' => $user_id, 'folders.status' => 'ARCHIVED'])
+            ->orderBy('folders.created_at', 'desc')
+            ->get();
+        return response()->json($data);
+    }
+
 }

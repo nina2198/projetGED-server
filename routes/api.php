@@ -78,9 +78,20 @@ Route::group(['prefix' => 'folders'], function () {
 
     Route::get('/', 'Folder\FolderController@index');
     Route::get('/{id}', 'Folder\FolderController@find');
+    Route::get('/track/{track_id}', 'Folder\FolderController@findByTrackId');
     Route::post('/', 'Folder\FolderController@create');
     Route::delete('/{id}', 'Folder\FolderController@destroy');
     Route::match(['post', 'put'],'/{id}', 'Folder\FolderController@update');
+
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('/{user_id}', 'Folder\FolderController@getUserFolders');
+        Route::group(['prefix' => 'status'], function () {
+            Route::get('/accepted/{user_id}', 'Folder\FolderController@getAcceptedFolders');
+            Route::get('/pending/{user_id}', 'Folder\FolderController@getPendingFolders');
+            Route::get('/rejected/{user_id}', 'Folder\FolderController@getRejectedFolders');
+            Route::get('/archived/{user_id}', 'Folder\FolderController@getArchivedFolders');
+        });
+    });
 
 });
 

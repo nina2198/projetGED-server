@@ -9,36 +9,17 @@ use App\Models\APIError;
 
 class ServiceController extends Controller
 {
-    /**
-    * Display a list of service from database
-    * @author NGOMSEU
-    * @email ngomseuromaric@gmail.com
-    * @param  \Illuminate\Http\Request  $req
-    * @return \Illuminate\Http\Response
-    */
+    
    public function index (Request $req)
    {
        $data = Service::simplePaginate($req->has('limit') ? $req->limit : 15);
        return response()->json($data);
    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+    
+    public function create(){ }
 
-    /**
-     * Create a service on database
-     * @author NGOMSEU
-     * @email ngomseuromaric@gmail.com
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $req)
     {
         $data = $req->only('name');

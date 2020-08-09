@@ -22,7 +22,6 @@ class CreateFoldersTable extends Migration
             $table->date('archinving_date')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('folder_type_id');
-            $table->unsignedBigInteger('archive_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
