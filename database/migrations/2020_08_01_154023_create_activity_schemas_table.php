@@ -21,7 +21,7 @@ class CreateActivitySchemasTable extends Migration
             
             $table->foreign('schema_id')->references('id')->on('schemas');
             $table->foreign('activity_id')->references('id')->on('activities');
-            $table->primary(['id', 'activity_id']);
+            $table->primary(['schema_id', 'activity_id']);
         });
     }
     /**
