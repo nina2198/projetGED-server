@@ -15,9 +15,9 @@ class FolderSeeder extends Seeder
         factory(Folder::class, 100)->make()->each(function ($folder) use ($faker) {
             $users = App\Models\Person\User::all();
             $folder_types = App\Models\Folder\FolderType::all();
-
             $folder->user_id = $faker->randomElement($users)->id;
             $folder->folder_type_id = $faker->randomElement($folder_types)->id;
+            
             $folder->save();
         });
     }

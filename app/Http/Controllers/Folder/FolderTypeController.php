@@ -39,7 +39,7 @@ class FolderTypeController extends Controller
         return response()->json($data);
     }
 
-    // Créer un dossier
+    // Créer un type de dossier
     public function create(Request $req)
     {
         $data = $req->only(['name', 'description', 'max_file_size', 'file_number']);

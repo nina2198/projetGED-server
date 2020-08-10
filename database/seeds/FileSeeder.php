@@ -15,6 +15,9 @@ class FileSeeder extends Seeder
         factory(File::class, 10)->make()->each(function ($file) use ($faker) {
             $folders = App\Models\Folder\Folder::all();
             $file->folder_id = $faker->randomElement($folders)->id;
+            $file_types = App\Models\Folder\FileType::all();
+            $file->file_type_id = $faker->randomElement($file_types)->id;
+            
             $file->save();
         });
     }

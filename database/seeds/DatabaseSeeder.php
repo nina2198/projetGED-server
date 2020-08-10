@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FolderTypeSeeder::class,
             FolderSeeder::class,
+            FileTypeSeeder::class,
             FileSeeder::class
         ]);
     

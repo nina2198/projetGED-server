@@ -17,7 +17,7 @@ class CreateFilesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->text('description')->nullable();
-            $table->enum('file_type', ['PDF', 'PHOTO']);
+            $table->unsignedBigInteger('file_type_id');
             $table->text('path');
             $table->double('file_size');
             $table->unsignedBigInteger('folder_id');
@@ -25,6 +25,8 @@ class CreateFilesTable extends Migration
             $table->softDeletes();
 
             $table->foreign('folder_id')->references('id')->on('folders')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('file_type_id')->references('id')->on('file_types')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
     }

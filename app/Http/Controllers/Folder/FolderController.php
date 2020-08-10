@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Folder;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Folder\Folder;
+use App\Models\Folder\File;
 use App\Models\Folder\FolderType;
 use App\Models\Persons\User;
 use Carbon\Carbon;
@@ -196,7 +197,7 @@ class FolderController extends Controller
         }
 
          $files = File::where('folder_id',$id)->get();
-         return response()->json($folder);
+         return response()->json($files);
 
     }
     //trouver tout les dossiers archivés
