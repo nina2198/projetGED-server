@@ -17,6 +17,11 @@ class DatabaseSeeder extends Seeder
         Schema::disableForeignKeyConstraints();
 
         // $this->call(CityAndCountrySeeder::class);
+
+        //module Serice
+        $this->call([
+            ServiceSeeder::class
+        ]);
         
         // module person
         $this->call([
@@ -40,15 +45,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SchemaSeeder::class
         ]);
-
-        //module Serice
-        $this->call([
-            ServiceSeeder::class
-        ]);
       
       //module Activites
       $this->call([
-            ActivitesSeeder::class,
+            ActivitySeeder::class,
       ]);
 
         Schema::enableForeignKeyConstraints();

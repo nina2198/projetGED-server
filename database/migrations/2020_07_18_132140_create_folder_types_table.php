@@ -22,7 +22,7 @@ class CreateFolderTypesTable extends Migration
             $table->softDeletes();
 
             $table->timestamps();
-           
+           $table->softDeletes();
         });
     }
 

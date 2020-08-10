@@ -15,14 +15,13 @@ class CreateFoldersTable extends Migration
     {
         Schema::create('folders', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->text('name')->unique();
+            $table->string('name')->unique();
             $table->text('description');
             $table->enum('status', ['ACCEPTED', 'PENDING', 'REJECTED', 'ARCHIVED'])->default('PENDING');
             $table->integer('track_id')->unique();
             $table->date('archinving_date')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('folder_type_id');
-            $table->unsignedBigInteger('archive_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

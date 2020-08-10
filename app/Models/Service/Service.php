@@ -3,17 +3,20 @@
 namespace App\Models\Service;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Activity\Activity;
 
 class Service extends Model
 {
     protected $guarded = [];
-    protected $fillable = [
-        'idService', 'nomService',
-    ];
-
+    
     //definition des relations 
     public function activities()
     {
-        return $this->hasMany('App\Models\Activity\Activites');
+        return $this->hasMany('App\Models\Activity\Activity');
+    }
+
+    public function users()
+    {
+        return $this->hasMany('App\Models\Person\User');
     }
 }

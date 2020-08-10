@@ -36,6 +36,10 @@ Route::group(['prefix' => 'persons'], function () {
         Route::post('/', 'Person\UserController@create');
         Route::delete('/{id}', 'Person\UserController@destroy');
         Route::match(['post', 'put'],'/{id}', 'Person\UserController@update');
+        Route::get('/status/{id}', 'Person\UserController@instances_waiting');
+        Route::get('/status/{id}', 'Person\UserController@instances_hanging');
+        Route::post('/reset-password', 'Person\UserController@reinitializePassword');
+
     });
 
     Route::group(['prefix' => 'permissions'], function () {
@@ -74,11 +78,22 @@ Route::group(['prefix' => 'folders'], function () {
 
     Route::get('/', 'Folder\FolderController@index');
     Route::get('/{id}', 'Folder\FolderController@find');
+    Route::get('/track/{track_id}', 'Folder\FolderController@findByTrackId');
     Route::post('/', 'Folder\FolderController@create');
     Route::get('/archived', 'Folder\FolderController@findTreatedFolders');
     Route::get('/{id}/files', 'Folder\FolderController@findFiles');
     Route::delete('/{id}', 'Folder\FolderController@destroy');
     Route::match(['post', 'put'],'/{id}', 'Folder\FolderController@update');
+
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('/{user_id}', 'Folder\FolderController@getUserFolders');
+        Route::group(['prefix' => 'status'], function () {
+            Route::get('/accepted/{user_id}', 'Folder\FolderController@getAcceptedFolders');
+            Route::get('/pending/{user_id}', 'Folder\FolderController@getPendingFolders');
+            Route::get('/rejected/{user_id}', 'Folder\FolderController@getRejectedFolders');
+            Route::get('/archived/{user_id}', 'Folder\FolderController@getArchivedFolders');
+        });
+    });
 
 });
 
@@ -108,4 +123,36 @@ Route::group(['prefix' => 'folders'], function () {
         Route::match(['post', 'put'],'/{id}', 'Folder\FileTypeController@update');
     });
 
+});
+
+
+Route::group(['prefix' => 'activities'], function(){
+    Route::get('/', 'Activity\ActivitiesController@index');
+    Route::get('/j', 'Activity\ActivitiesController@join');
+    Route::post('/create', 'Activity\ActivitiesController@create');
+    Route::get('/{id}', 'Activity\ActivitiesController@find') ;
+    Route::match(['post', 'put'], '/{id}', 'Activity\ActivitiesController@update') ;
+    Route::get('/inst/{id}', 'Activity\ActivitiesController@activities_instances');
+    Route::get('/service/{id}', 'Activity\ActivitiesController@service');
+
+});
+
+Route::group(['prefix' => 'activity_instances'], function(){
+    Route::get('/', 'Activity\ActivityInstancesController@index') ;
+    Route::get('/{id}', 'Activity\ActivityInstancesController@find');
+    Route::get('/activity/{id}', 'Activity\ActivityInstancesController@activity');
+    Route::get('/user/{id}', 'Activity\ActivityInstancesController@user');
+
+
+});
+ // Service module : 'middleware' => 'auth:api',
+ Route::group(['prefix' => 'services'], function () {
+    Route::get('/', 'Service\ServiceController@index');
+    Route::get('/{id}', 'Service\ServiceController@find');
+    Route::get('/search', 'Service\ServiceController@search');
+    Route::delete('/{id}', 'Service\ServiceController@destroy');
+    Route::match(['post', 'put'],'/update/{id}', 'Service\ServiceController@update');
+    Route::post('/', 'Service\ServiceController@create');
+    Route::get('/activities/{id}', 'Service\ServiceController@activities');
+    Route::get('/u/{id}', 'Service\ServiceController@users');
 });

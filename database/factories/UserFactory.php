@@ -26,11 +26,12 @@ $factory->define(User::class, function (Faker $faker) {
         'birth_date' => $faker->date(),
         'birth_place' => $faker->streetName(),
         'tel' => $faker->phoneNumber(),
-        'job' => $faker->randomElement(['F', 'M']),
+        'job' => $faker->randomElement(['VISITOR', 'EMPLOYEE', 'ADMINISTRATOR', 'SUPERADMIN']),
         'language' => $faker->languageCode(),
         'gender' => $faker->randomElement(['F', 'M']),
         'password' => bcrypt('pwd'),
         'remember_token' => Str::random(10),
+        
     ];
 
 });
