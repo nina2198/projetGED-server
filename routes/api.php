@@ -36,13 +36,13 @@ Route::group(['prefix' => 'persons'], function () {
         Route::post('/', 'Person\UserController@create');
         Route::delete('/{id}', 'Person\UserController@destroy');
         Route::match(['post', 'put'],'/{id}', 'Person\UserController@update');
-        Route::post('/{id}', 'Person\UserController@getUserAvatar');
+        Route::post('/avatar/{user_id}', 'Person\UserController@getUserAvatar');
         Route::get('/roles/permissions/{id}', 'Person\UserController@getUserRolesAndPermisssions');
         /** @author Ulrich Bertrand*/
         Route::get('/status/{id}', 'Person\UserController@instances_waiting');
         Route::get('/status/{id}', 'Person\UserController@instances_hanging');
+        Route::post('/reset-password', 'Person\UserController@reinitializePassword');
 
-        /** */
     });
 
     Route::group(['prefix' => 'permissions'], function () {
@@ -116,6 +116,7 @@ Route::group(['prefix' => 'activities'], function(){
     Route::match(['post', 'put'], '/{id}', 'Activity\ActivitiesController@update') ;
     Route::get('/inst/{id}', 'Activity\ActivitiesController@activities_instances');
     Route::get('/service/{id}', 'Activity\ActivitiesController@service');
+    Route::get('/services/{id}', 'Activity\ActivitiesController@find_service');
 
 });
 
@@ -124,16 +125,19 @@ Route::group(['prefix' => 'activity_instances'], function(){
     Route::get('/{id}', 'Activity\ActivityInstancesController@find');
     Route::get('/activity/{id}', 'Activity\ActivityInstancesController@activity');
     Route::get('/user/{id}', 'Activity\ActivityInstancesController@user');
+    Route::get('/pourcent/{id}', 'Activity\ActivitySchemasController@getFolderProgressionPourcentage');
 
 
+    Route::post('/init/{schema_id}/{track_id}', 'Activity\ActivityInstancesController@initialiserInstance');
 });
+
  // Service module : 'middleware' => 'auth:api',
  Route::group(['prefix' => 'Service'], function () {
     Route::get('/', 'Service\ServiceController@index');
     Route::get('/find/{id}', 'Service\ServiceController@find');
     Route::get('/search', 'Service\ServiceController@search');
     Route::delete('/destroy/{id}', 'Service\ServiceController@destroy');
-    Route::put('/update/{id}', 'Service\ServiceController@update');
+    Route::match(['post', 'put'],'/update/{id}', 'Service\ServiceController@update');
     Route::post('/create', 'Service\ServiceController@store');
     Route::get('/activities/{id}', 'Service\ServiceController@activities');
     Route::get('/u/{id}', 'Service\ServiceController@users');
@@ -149,4 +153,5 @@ Route::group(['prefix' => 'schemas'], function () {
     Route::get('/search', 'Service\ServiceController@search');
 
 });
+
 

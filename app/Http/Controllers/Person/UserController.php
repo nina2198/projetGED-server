@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Person\User;
 use App\Models\APIError;
-use Illuminate\Support\Collection;
+use App\Helpers\Helper;
 
  /**
     * @author Nguedia Daniela
@@ -39,16 +39,17 @@ class UserController extends Controller
             'first_name' => 'required',
             'last_name' => 'required',
             'password' => 'required',
+            'job' => 'required|in:VISITOR, EMPLOYEE, ADMINISTRATOR, SUPERADMIN',
             'login' => 'required|unique:users',
-            'email' => ['required', 'email', Rule::unique('users', 'email')]
+            'email' => 'required|unique:users'
         ]);
        
         $data['password'] = bcrypt($data['password']);
         $data['avatar'] = '';
         //upload image
         if ($file = $req->file('avatar')) {
-            $filePaths = $this->uploadSingleFile($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif']);
-            $data['avatar'] = json_encode($filePaths);
+            $filePath = $this->uploadSingleFile($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif,jpeg']);
+            $data['avatar'] = $filePath['saved_file_path'];
         }
         $user = new User();
         $user->login = $data['login'];
@@ -63,6 +64,8 @@ class UserController extends Controller
             $user->birth_date = $data['birth_date'];
         if (isset($data['birth_place'])) 
             $user->birth_place = $data['birth_place'];
+        if (isset($data['service_id'])) 
+            $user->service_id = $data['service_id'];
         $user->save();
 
         return response()->json($user);
@@ -100,8 +103,8 @@ class UserController extends Controller
 
         //upload image
         if ($file = $req->file('avatar')) {
-            $filePaths = $this->uploadSingleFile($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif']);
-            $data['avatar'] = json_encode($filePaths);
+            $filePath = $this->uploadSingleFile($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif,jpeg']);
+            $data['avatar'] = $filePath['saved_file_path'];
         }
 
         if (isset($data['login'])) 
@@ -163,16 +166,16 @@ class UserController extends Controller
         return response()->json($user);
     }
     
-    public function getUserAvatar($id) {
-        if (!$user = User::find($id)) {
+    public function getUserAvatar($user_id) {
+        if (!$user = User::find($user_id)) {
             $apiError = new APIError;
             $apiError->setStatus("404");
             $apiError->setCode("USER_NOT_FOUND");
-            $apiError->setMessage("l'utilisateur d'id $id n'existe pas");
+            $apiError->setMessage("l'utilisateur d'id $user_id n'existe pas");
             return response()->json($apiError, 404);
         }
-        $user->avatar;
-        return response()->json($user);
+       $path = url($user->avatar);
+        return response()->json($path);
     }
 
    // $permission_user = PermissionUser::whereUserIdAndPermissionId($user_id, $permission_id)->first();
@@ -202,5 +205,27 @@ class UserController extends Controller
                               
         return response()->json($activityInstances);
    }
+
+   public function reinitializePassword(Request $req) {
+    $data = $req->only(['email']);
+    $user = User::whereEmail($data['email'])->first();
+    if(!$user) {
+        $apiError = new APIError;
+        $apiError->setStatus("404");
+        $apiError->setCode("EMAIL_NOT_FOUND");
+        $apiError->setMessage("L'adresse email " . $data['email'] . "n'existe pas");
+        return response()->json($apiError, 404);
+    }
+
+    $password = Helper::generate_password();
+    $user->password = bcrypt($password);
+    $user->update();
+
+    Helper::send_password_to_user($user, $password);
+
+    $success['status'] = true;
+    $success['password'] = $password;
+    return response()->json($success);
+}
 
 }

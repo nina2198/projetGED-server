@@ -65,6 +65,22 @@ class ActivitiesController extends Controller
         }
         return response()->json($activity);
     }
+    public function find_service($id) 
+    {
+        if(!$activity = Activity::find($id)) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode("ACTIVITY_DON'T_EXIST");
+            $apiError->setMessage("L'acticite d'id $id n'existe pas");
+            return response()->json($apiError, 404);
+        }
+        $service = Service :: find($activity->id)->where('id', '=', $activity->id)
+        ->pluck('name') ;
+        return response()->json($service);
+    }
+
+
+
     /**
      * @author Ulrich Bertrand
      * Change the description for the activity

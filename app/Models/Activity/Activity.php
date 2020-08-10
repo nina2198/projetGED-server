@@ -18,6 +18,12 @@ class Activity extends Model
         return $this->belongsTo('App\Models\Service\Service', 'service_id');
     }
 
+     //une activitté est creer pour un service
+     public function activity_schema()
+     {
+         return $this->belongsTo('App\Models\Schema\Schema');
+     }
+
     /**
      * Get the instances for the activity
      */
