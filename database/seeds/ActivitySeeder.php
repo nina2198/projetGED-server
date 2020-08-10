@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Models\Activity\Activity;
 
 class ActivitySeeder extends Seeder
 {

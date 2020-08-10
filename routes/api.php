@@ -113,6 +113,7 @@ Route::group(['prefix' => 'activities'], function(){
     Route::match(['post', 'put'], '/{id}', 'Activity\ActivitiesController@update') ;
     Route::get('/inst/{id}', 'Activity\ActivitiesController@activities_instances');
     Route::get('/service/{id}', 'Activity\ActivitiesController@service');
+    Route::get('/services/{id}', 'Activity\ActivitiesController@find_service');
 
 });
 
@@ -121,9 +122,12 @@ Route::group(['prefix' => 'activity_instances'], function(){
     Route::get('/{id}', 'Activity\ActivityInstancesController@find');
     Route::get('/activity/{id}', 'Activity\ActivityInstancesController@activity');
     Route::get('/user/{id}', 'Activity\ActivityInstancesController@user');
+    Route::get('/pourcent/{id}', 'Activity\ActivitySchemasController@getFolderProgressionPourcentage');
 
 
+    Route::post('/init/{schema_id}/{track_id}', 'Activity\ActivityInstancesController@initialiserInstance');
 });
+
  // Service module : 'middleware' => 'auth:api',
  Route::group(['prefix' => 'Service'], function () {
     Route::get('/', 'Service\ServiceController@index');
