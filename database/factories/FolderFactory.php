@@ -10,6 +10,6 @@ $factory->define(Folder::class, function (Faker $faker) {
         'name' => $faker->text(10),
         'description' => $faker->sentence(),
         'status' => $faker->randomElement(['ACCEPTED', 'PENDING', 'REJECTED', 'ARCHIVED']),
-        'track_id' => $faker->numberBetween(2000, 4000)
+        'track_id' => $faker->numberBetween(1000, 9999)
     ];
 });

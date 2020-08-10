@@ -100,4 +100,12 @@ Route::group(['prefix' => 'folders'], function () {
         Route::match(['post', 'put'],'/{id}', 'Folder\FileController@update');
     });
 
+    Route::group(['prefix' => 'file_types'], function () {
+        Route::get('/', 'Folder\FileTypeController@index');
+        Route::get('/{id}', 'Folder\FileTypeController@find');
+        Route::post('/', 'Folder\FileTypeController@create');
+        Route::delete('/{id}', 'Folder\FileTypeController@destroy');
+        Route::match(['post', 'put'],'/{id}', 'Folder\FileTypeController@update');
+    });
+
 });
