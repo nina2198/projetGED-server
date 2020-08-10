@@ -10,5 +10,6 @@ $factory->define(Schema::class, function (Faker $faker) {
         'id'=> $faker->unique()->numberBetween(2, 8),
         'service_number'=> $faker->numberBetween(2, 8),
         'name'=> $faker->text(20),
+        'description'=> $faker->text(25),
     ];
 });

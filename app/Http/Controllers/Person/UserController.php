@@ -100,7 +100,7 @@ class UserController extends Controller
 
         //upload image
         if ($file = $req->file('avatar')) {
-            $filePaths = $this->uploadMultipleFiles($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif']);
+            $filePaths = $this->uploadSingleFile($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif']);
             $data['avatar'] = json_encode($filePaths);
         }
 
@@ -156,7 +156,22 @@ class UserController extends Controller
         $user->roles;
         foreach($user->roles as $role) {
             $role->permissions;
+            foreach($role->permissions as $permission){
+                $permission->name;
+            }
         }
+        return response()->json($user);
+    }
+    
+    public function getUserAvatar($id) {
+        if (!$user = User::find($id)) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode("USER_NOT_FOUND");
+            $apiError->setMessage("l'utilisateur d'id $id n'existe pas");
+            return response()->json($apiError, 404);
+        }
+        $user->avatar;
         return response()->json($user);
     }
 
@@ -187,4 +202,5 @@ class UserController extends Controller
                               
         return response()->json($activityInstances);
    }
+
 }

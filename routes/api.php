@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
+|@
 | Here is where you can register API routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
@@ -36,6 +36,8 @@ Route::group(['prefix' => 'persons'], function () {
         Route::post('/', 'Person\UserController@create');
         Route::delete('/{id}', 'Person\UserController@destroy');
         Route::match(['post', 'put'],'/{id}', 'Person\UserController@update');
+        Route::post('/{id}', 'Person\UserController@getUserAvatar');
+        Route::get('/roles/permissions/{id}', 'Person\UserController@getUserRolesAndPermisssions');
         /** @author Ulrich Bertrand*/
         Route::get('/status/{id}', 'Person\UserController@instances_waiting');
         Route::get('/status/{id}', 'Person\UserController@instances_hanging');
@@ -136,3 +138,15 @@ Route::group(['prefix' => 'activity_instances'], function(){
     Route::get('/activities/{id}', 'Service\ServiceController@activities');
     Route::get('/u/{id}', 'Service\ServiceController@users');
 });
+
+Route::group(['prefix' => 'schemas'], function () {
+
+    Route::get('/', 'Schema\SchemaController@index');
+    Route::get('/{id}', 'Schema\SchemaController@find');
+    Route::post('/', 'Schema\SchemaController@create');
+    Route::delete('/{id}', 'Schema\SchemaController@destroy');
+    Route::match(['post', 'put'],'/{id}', 'Schema\SchemaController@update');
+    Route::get('/search', 'Service\ServiceController@search');
+
+});
+
