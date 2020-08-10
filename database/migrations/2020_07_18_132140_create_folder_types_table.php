@@ -19,10 +19,9 @@ class CreateFolderTypesTable extends Migration
             $table->text('description');
             $table->double('max_file_size')->nullable();
             $table->integer('file_number')->nullable();
-            $table->softDeletes();
 
             $table->timestamps();
-           $table->softDeletes();
+            $table->softDeletes();
         });
     }
 
