@@ -185,4 +185,23 @@ class FolderController extends Controller
         return response()->json($data);
     }
 
+    //trouver tous les fichiers d'un dossier
+    public function findFiles($id){
+        if (!$folder = Folder::find($id)) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode(" FOLDER_NOT_FOUND");
+            $apiError->setMessage("Le dossier d'id $id n'existe pas");
+            return response()->json($apiError, 404);
+        }
+
+         $files = File::where('folder_id',$id)->get();
+         return response()->json($folder);
+
+    }
+    //trouver tout les dossiers archivés
+    public function findTreatedFolders(){
+        $folders = Folder::where('status','ARCHIVED')->get();
+        return response()->json($folders);
+    }
 }

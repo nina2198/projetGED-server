@@ -80,6 +80,8 @@ Route::group(['prefix' => 'folders'], function () {
     Route::get('/{id}', 'Folder\FolderController@find');
     Route::get('/track/{track_id}', 'Folder\FolderController@findByTrackId');
     Route::post('/', 'Folder\FolderController@create');
+    Route::get('/archived', 'Folder\FolderController@findTreatedFolders');
+    Route::get('/{id}/files', 'Folder\FolderController@findFiles');
     Route::delete('/{id}', 'Folder\FolderController@destroy');
     Route::match(['post', 'put'],'/{id}', 'Folder\FolderController@update');
 
