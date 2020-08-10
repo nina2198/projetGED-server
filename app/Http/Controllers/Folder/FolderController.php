@@ -149,26 +149,7 @@ class FolderController extends Controller
 
         return response()->json(null);
     }
-
-    //trouver tous les fichiers d'un dossier
-    public function findFiles($id){
-        if (!$folder = Folder::find($id)) {
-            $apiError = new APIError;
-            $apiError->setStatus("404");
-            $apiError->setCode(" FOLDER_NOT_FOUND");
-            $apiError->setMessage("Le dossier d'id $id n'existe pas");
-            return response()->json($apiError, 404);
-        }
-
-         $files = File::where('folder_id',$id)->get();
-         return response()->json($files);
-
-    }
-    //trouver tout les dossiers archivés
-    public function findTreatedFolders(){
-        $folders = Folder::where('status','ARCHIVED')->get();
-        return response()->json($folders);
-    }
+   
     public function getAcceptedFolders($user_id) {
         $data = Folder::select('folders.*', 'folder_types.id as folder_type_id', 'folder_types.name as folder_type_name', 'folder_types.file_number')
             ->join('folder_types', 'folder_types.id', '=', 'folders.folder_type_id')
@@ -205,4 +186,23 @@ class FolderController extends Controller
         return response()->json($data);
     }
 
+    //trouver tous les fichiers d'un dossier
+    public function findFiles($id){
+        if (!$folder = Folder::find($id)) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode(" FOLDER_NOT_FOUND");
+            $apiError->setMessage("Le dossier d'id $id n'existe pas");
+            return response()->json($apiError, 404);
+        }
+
+         $files = File::where('folder_id',$id)->get();
+         return response()->json($files);
+
+    }
+    //trouver tout les dossiers archivés
+    public function findTreatedFolders(){
+        $folders = Folder::where('status','ARCHIVED')->get();
+        return response()->json($folders);
+    }
 }
