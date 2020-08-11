@@ -9,4 +9,8 @@ class FolderType extends Model
 {
     use SoftDeletes;
     protected $guarded = [];
+
+    public function fileTypes() {
+        return $this->hasMany('App\Models\Folder\FileType');
+    }
 }

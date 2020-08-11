@@ -56,7 +56,7 @@ class UserController extends Controller
         if (isset($data['avatar'])) 
             $user->avatar = $data['avatar'];
         if (isset($data['tel'])) 
-            $user->avatar = $data['tel'];
+            $user->tel = $data['tel'];
         if (isset($data['birth_date'])) 
             $user->birth_date = $data['birth_date'];
         if (isset($data['birth_place'])) 
@@ -78,6 +78,17 @@ class UserController extends Controller
         }
         $user->permissions;
         $user->roles;
+        return response()->json($user);
+    }
+
+    public function findByEmail($email) {
+        if(!$user = User::whereEmail($email)->first()) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode("USER_NOT_FOUND");
+            $apiError->setMessage("l'utilisateur d'email $email n'existe pas");
+            return response()->json($apiError, 404);
+        }
         return response()->json($user);
     }
 
@@ -208,6 +219,18 @@ class UserController extends Controller
     $success['status'] = true;
     $success['password'] = $password;
     return response()->json($success);
+}
+
+public function getUserAvatar($user_id) {
+    if(!$user = User::find($user_id)) {
+        $apiError = new APIError;
+        $apiError->setStatus("404");
+        $apiError->setCode("USER_NOT_FOUND");
+        $apiError->setMessage("l'utilisateur d'id $user_id n'existe pas");
+        return response()->json($apiError, 404);
+    }
+    $path = url($user->avatar);
+    return response()->json($path);
 }
 
 }

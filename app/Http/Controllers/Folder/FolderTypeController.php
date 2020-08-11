@@ -15,6 +15,19 @@ class FolderTypeController extends Controller
         $data = FolderType::simplePaginate($req->has('limit') ? $req->limit : 15);
         return response()->json($data);
     }
+
+    // Retourner tout les type de dossier avec les types de fichiers associes
+    public function getAll()
+    {
+        $data = FolderType::select('folder_types.*')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        foreach ($data as $folder_type) {
+            $folder_type->fileTypes;
+        }
+        return response()->json($data);
+    }
+
    // Rechercher un type de dossier par son id
     public function find($id){
          $folder_type = new FolderType();

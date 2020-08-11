@@ -30,6 +30,7 @@ class AuthController extends Controller
             $user = Auth::user();
             $user->last_login = Carbon::now();
             $user->save();
+            $user->avatar = url($user->avatar);
             $tokenResult = $user->createToken(self::$tokenName);
             $token = $tokenResult->token;
             $token->expires_at = Carbon::now()->addDay();

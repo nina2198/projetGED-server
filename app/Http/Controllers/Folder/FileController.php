@@ -36,7 +36,6 @@ class FileController extends Controller
         $data = $req->only(['name', 'description', 'file_size', 'file_type_id', 'path', 'folder_id']);
         $this->validate($data, [
             'name' => 'required',
-            'description' => 'required',
             'file_size' => 'required',
             'file_type_id' => 'required:exists:file_types:id',
             'folder_id' => 'required:exists:folders:id',

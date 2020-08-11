@@ -33,12 +33,14 @@ Route::group(['prefix' => 'persons'], function () {
     Route::group(['prefix' => 'users'], function () {
         Route::get('/', 'Person\UserController@index');
         Route::get('/{id}', 'Person\UserController@find');
+        Route::get('/email/{email}', 'Person\UserController@findByEmail');
         Route::post('/', 'Person\UserController@create');
         Route::delete('/{id}', 'Person\UserController@destroy');
         Route::match(['post', 'put'],'/{id}', 'Person\UserController@update');
         Route::get('/status/{id}', 'Person\UserController@instances_waiting');
         Route::get('/status/{id}', 'Person\UserController@instances_hanging');
         Route::post('/reset-password', 'Person\UserController@reinitializePassword');
+        Route::get('/avatar/{user_id}', 'Person\UserController@getUserAvatar');
 
     });
 
@@ -101,6 +103,7 @@ Route::group(['prefix' => 'folders'], function () {
 
     Route::group(['prefix' => 'folder_types'], function () {
         Route::get('/', 'Folder\FolderTypeController@index');
+        Route::get('/file_types', 'Folder\FolderTypeController@getAll');
         Route::get('/{id}', 'Folder\FolderTypeController@find');
         Route::post('/', 'Folder\FolderTypeController@create');
         Route::delete('/{id}', 'Folder\FolderTypeController@destroy');
