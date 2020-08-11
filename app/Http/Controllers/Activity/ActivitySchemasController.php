@@ -10,6 +10,7 @@ use App\Models\Activity\ActivityInstance;
 use App\Models\Folder\Folder;
 use Illuminate\Http\Request;
 use App\Models\Schema\Schema;
+use Illuminate\Support\Facades\DB;
 
 class ActivitySchemasController extends Controller
 {
@@ -32,29 +33,37 @@ class ActivitySchemasController extends Controller
     return response()->json($activity_id);
   }
 
-  public static function getFolderProgressionPourcentage($folder_id){
-    $data = ActivityInstance::select('activity_instances.id')
+  /**
+   * A n'utiliser que dans le fonctionnement interne de l'application
+   */
+  public static function getFolderProgressionPourcentage($track_id){
+    $number = ActivityInstance::select( DB::raw('count(*) as number'))
+          ->where(['activity_instances.folder_id' => ActivityInstancesController::getIdFolder($track_id)])->first()->number;
+
+    $data = ActivityInstance::select('activity_instances.*')
             ->join('folders', 'activity_instances.folder_id', '=', 'folders.id')
-            ->where(['folders.id' => $folder_id])
-            ->orderBy('activity_instances.created_at', 'DESC')
-            ->first();
+            ->where(['folders.track_id' => $track_id])
+            ->orderBy('activity_instances.created_at', 'DESC')->first();
     $activity_instance = $data->id;
+    $status = $data->status ;
     $data = ActivitySchemasController::getActivityOrderAndServiceNumber($activity_instance);
-    return ($data->activity_order / $data->service_number)*100 ;
+    if($status!='ENDING' && $number==1) return 0;
+    else if($number>1 && $status!='ENDING') return (($number-1) / $data->service_number)*100 ;
+    else if ($number>1 && $status=='ENDING') return (  $data->activity_order/ $data->service_number)*100 ;
   }
 
-  //poucentage de progression d'un dossier
+  //poucentage de progression d'un dossier a partir de la derniere instance cree
   public function getFolderPoucentage($activity_instance_id)
   {
-    $data = ActivitySchema::select('schemas.service_number', 'activity_schemas.activity_order')
+    $data = ActivitySchema::select('schemas.service_number', 'activity_schemas.activity_order', 'activity_instances.status')
       ->join('schemas', 'schemas.id', '=', 'activity_schemas.schema_id')
       ->join('activities', 'activities.id', '=', 'activity_schemas.activity_id')
       ->join('activity_instances', 'activity_instances.activity_id', '=', 'activities.id')
       ->where(['activity_instances.id' => $activity_instance_id])
       ->first();
-
-    $result = ($data->activity_order / $data->service_number) * 100;
-    return response()->json($result);
+      if($data->status!='ENDING' && $data->activity_order==1) return 0;
+      else if($data->activity_order>1 && $data->status!='ENDING') return (($data->activity_order-1) / $data->service_number)*100 ;
+      else if ($data->activity_order>1 && $data->status=='ENDING') return (  $data->activity_order/ $data->service_number)*100 ;
   }
 
   public static function getActivityOrderAndServiceNumber($activity_instance_id)

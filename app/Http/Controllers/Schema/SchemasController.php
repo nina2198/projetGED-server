@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Schema;
 
 use App\Http\Controllers\Controller;
+use App\Models\APIError;
 use App\Models\Schema\Schema;
 use Illuminate\Http\Request;
 

@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Activity\ActivityInstance;
 use App\Http\Controllers\Activity\ActivitySchemasController ;
+use App\Http\Controllers\Activity\ActivityController ;
 use App\Models\Activity\Activity;
+use App\Models\Activity\ActivitySchema;
 use App\Models\APIError;
 use App\Models\Folder\Folder;
 use App\Models\Person\User;
@@ -22,29 +24,45 @@ use App\Models\Service\Service;
 
 class ActivityInstancesController extends Controller
 {
+    /**
+     * return the id of the folder where track_id correspond
+     */
+    public static function getIdFolder($track_id){
+        $folder =  Folder::select('folders.*')->where(['folders.track_id' => $track_id])->first() ;
+        return $folder->id ;
+    }
 
+    /**
+     * A UTILISER POUR DEMARRER LE PROCESSUS DE TRAITEMENT D'UN DOSSIER DANS L'APPLICATION
+     * DE FACON AUTOMATIQUE LORSQUON LE SOUMET POUR SUIVRE UN SCHEMA DONNE DE TRAITEMENT
+     * @author Ulrich Bertrand
+     * par defaut le traitement de l'activité est assigné à chaque admin du service correspondant
+     */
     public static function initialiserInstance($schema_id, $track_id)
     {
-        //'activity_schemas.activity_id', 'activities.service_id', 'folders.track_id as track_id', 'admin_services.admin_id as user_id'
-      $data = Schema::select('*')
-        ->join('activity_schemas', 'activity_schemas.schema_id', '=', 'schemas.id')
+            //Obtend the id of folder in the table 
+        $folder_id = ActivityInstancesController::getIdFolder($track_id); 
+            //recupere dans la table activity_schema la premiere activité a effectuer.
+        $activity_id = ActivitySchema::select('*')
+        ->join('schemas', 'activity_schemas.schema_id', '=', 'schemas.id')
         ->where([
             'schemas.id' => +$schema_id,
             'activity_schemas.activity_order' => 1
-        ])->first();
+        ])->first()->activity_id;
 
-        $activity_id = $data->activity_id;
-        $act = Activity::find($activity_id);
+        $service_id = Activity::find($activity_id)->service_id ;
+        $user_id = Service::select('admin_id')->
+                join('admin_services','admin_services.service_id','=', 'services.id')
+                ->where(['admin_services.service_id' =>$service_id])->first()->admin_id ; 
 
-        $service_id = $act->service_id;
-
-        $user_id = Service::select('admin_services.admin_id as user_id')
-        ->join('admin_services', 'admin_services.service_id', '=', 'services.id')
-        ->where(['services.id' => $service_id])->get() ; 
-       /* $sata =  Service::select('*')
-                ->join('activities', 'services.id', '=', 'activities.service_id')
-                ->where(['activities.service_id' => $activity_id ]) ;*/
-        }
+        $activity_instance = new ActivityInstance();
+        $activity_instance->folder_id = $folder_id ;
+        $activity_instance->activity_id = $activity_id ;
+        $activity_instance->user_id = $user_id ;
+        $activity_instance->service_id = $service_id ;
+        $activity_instance->save() ;
+        return response()->json($activity_instance) ;
+    }
 
     public function index(Request $req) //list of all the traitments in the system
     {
@@ -223,4 +241,6 @@ class ActivityInstancesController extends Controller
  * Obtent the number of folders pour les users beheviors
  */
 
+
+ 
 }
