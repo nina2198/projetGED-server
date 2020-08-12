@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\service;
+namespace App\Http\Controllers\Service;
 
 use App\Http\Controllers\Controller;
-use App\Models\service\Service;
+use App\Models\Service\Service;
 use Illuminate\Http\Request;
 use App\Models\APIError;
 
