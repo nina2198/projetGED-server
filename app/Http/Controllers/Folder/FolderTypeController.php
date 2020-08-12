@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Folder\FolderType;
 use Illuminate\Http\Request;
 use App\Models\APIError;
+use Illuminate\Support\Str;
 
 class FolderTypeController extends Controller
 {
@@ -59,6 +60,10 @@ class FolderTypeController extends Controller
         $this->validate($data, [
             'name' => 'required',
             'description' => 'required'
+        ]);
+        $data['slug'] = Str::slug($data['name'], '_');
+        $this->validate($data, [
+            'slug' => 'required:unique:folder_types:slug'
         ]);
 
         $folder_type = new FolderType();

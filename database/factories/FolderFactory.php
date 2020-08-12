@@ -8,6 +8,7 @@ use Faker\Generator as Faker;
 $factory->define(Folder::class, function (Faker $faker) {
     return [
         'name' => $faker->text(30),
+        'slug' => Illuminate\Support\Str::slug($faker->sentence(), '_'),
         'description' => $faker->sentence(),
         'status' => $faker->randomElement(['ACCEPTED', 'PENDING', 'REJECTED', 'ARCHIVED']),
         'track_id' => $faker->numberBetween(1000, 9999)

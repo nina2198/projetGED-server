@@ -15,7 +15,8 @@ class CreateFolderTypesTable extends Migration
     {
         Schema::create('folder_types', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->unique();
+            $table->string('name');
+            $table->string('slug')->unique();
             $table->text('description');
             $table->double('max_file_size')->nullable();
             $table->integer('file_number')->nullable();

@@ -33,7 +33,7 @@ class FileController extends Controller
     // Créer un dossier
     public function create(Request $req)
     {
-        $data = $req->only(['name', 'description', 'file_size', 'file_type_id', 'path', 'folder_id']);
+        $data = $req->only(['name', 'file_size', 'file_type_id', 'path', 'folder_id']);
         $this->validate($data, [
             'name' => 'required',
             'file_size' => 'required',
@@ -60,10 +60,9 @@ class FileController extends Controller
 
         $file = new File();
         $file->name = $data['name'];
-        $file->description = $data['description'];
         $file->file_size = $data['file_size'];
+        $file->file_type_id = $data['file_type_id'];
         $file->folder_id = $data['folder_id'];
-        $file->file_type = $data['file_type'];
         if(isset($data['path'])) $file->path = $data['path'];
         $file->save();
 
@@ -85,7 +84,7 @@ class FileController extends Controller
             $apiError->setMessage("le type de dossier d'id $folder->folder_type_id n'existe pas");
             return response()->json($apiError, 404);
         }
-        return $folder_type->name . '\\' . $folder->name;
+        return $folder_type->slug . '\\' . $folder->slug;
     }
 
     // Rechercher un dossier par son id

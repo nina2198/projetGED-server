@@ -10,6 +10,7 @@ use App\Models\Folder\FolderType;
 use App\Models\Persons\User;
 use Carbon\Carbon;
 use App\Models\APIError;
+use Illuminate\Support\Str;
 
 class FolderController extends Controller
 {
@@ -54,9 +55,11 @@ class FolderController extends Controller
         $folder->folder_type_id = $data['folder_type_id'];
         $folder->track_id = $this->generateFolderTrackId();
         $folder_type = $this->getFolderType($data['folder_type_id']);
-        $folder->name = $folder_type->name;
+        $folder->name = $folder_type->slug;
+        $folder->slug = $folder->name;
         $folder->save();
         $folder->name = $folder->name . '_GED_0.0.' . $folder->id;
+        $folder->slug = $folder->name;
         $folder->update();
 
         return response()->json($folder);
