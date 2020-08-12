@@ -12,23 +12,18 @@ use Illuminate\Support\Collection\stdClass;
 use App\Models\APIError;
 use Illuminate\Pagination\Paginator;
 
-
+/**
+ * @author Ulrich Bertrand
+ * return all the activity of all Service
+ */
 class ActivitiesController extends Controller
 {
-    /**
-     * @author Ulrich Bertrand
-     * return all the activity of all Service
-     */
     public function index(Request $req)
     {
         $activity = Activity::simplePaginate($req->has('limit') ? $req->limit : 15);
         return response()->json($activity); 
     }
-    /**
-     * @author Ulrich Bertrand
-     * Create the new activity.
-     * OK
-     */
+   
     public function create(Request $req)
     {
         // si description et service present dans la requete
@@ -38,23 +33,26 @@ class ActivitiesController extends Controller
             'service_id' => 'required|integer'
         ]);
         //recuperation des variable de requete
-        $service_id = $data['service_id'];
-        $description = $data['description'];
-
         $activity = new Activity();
-        $activity->service_id = $service_id ;
-        $activity->description = $description;
-
+        $activity->service_id = $data['service_id'];
+        $activity->description = $data['description'];
         $activity->save(); 
         return response()->json($activity) ;
-        
     }
     
-    /**
-     * @author Ulrich Bertrand
-     * Find the activity
-     */
     public function find($id) 
+    {
+        if(!$activity = Activity::find($id)) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode("ACTIVITY_NOT_FOUND");
+            $apiError->setMessage("L'acticite d'id $id n'existe pas");
+            return response()->json($apiError, 404);
+        }
+        return response()->json($activity);
+    }
+
+    public function find_service($id) 
     {
         if(!$activity = Activity::find($id)) {
             $apiError = new APIError;
@@ -63,13 +61,11 @@ class ActivitiesController extends Controller
             $apiError->setMessage("L'acticite d'id $id n'existe pas");
             return response()->json($apiError, 404);
         }
-        return response()->json($activity);
+        $service = Service::find($activity->id)->where('id', '=', $activity->id)
+        ->pluck('name') ;
+        return response()->json($service);
     }
-    /**
-     * @author Ulrich Bertrand
-     * Change the description for the activity
-     * OK
-     */
+
     public function update(Request $req, $id)
     {
          if(!$activity = Activity::find($id)) {
@@ -88,9 +84,7 @@ class ActivitiesController extends Controller
     }
 
 /**
- * 
- * 
- * THE ODERS METHODS WILL CAN USE 
+ * THE ODERS METHODS WE CAN USE 
  */
 
     /**

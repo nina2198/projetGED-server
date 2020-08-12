@@ -14,19 +14,18 @@ class CreateActivitySchemasTable extends Migration
     public function up()
     {
         Schema::create('activity_schemas', function (Blueprint $table) {
-            $table->unsignedBigInteger('id');
+            $table->unsignedBigInteger('schema_id');
             $table->unsignedBigInteger('activity_id');
             $table->unsignedBigInteger('activity_order');
             $table->timestamps();
             
-            $table->foreign('id')->references('id')->on('schemas');
+            $table->foreign('schema_id')->references('id')->on('schemas');
             $table->foreign('activity_id')->references('id')->on('activities');
-            $table->primary(['id', 'activity_id']);
+            $table->primary(['schema_id', 'activity_id']);
         });
     }
-
     /**
-     * Reverse the migrations.
+     * Reverse the migrations 
      *
      * @return void
      */

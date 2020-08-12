@@ -16,12 +16,21 @@ class CreateActivityInstancesTable extends Migration
         Schema::create('activity_instances', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('activity_id');
+            $table->unsignedBigInteger('service_id');
+            $table->unsignedBigInteger('folder_id');
             $table->unsignedBigInteger('user_id');
-            $table->enum('status', ['WAITING', 'HANGING', 'ENDING', 'EXECUTION'])->default('WAITING');
-            // EN ATTENTE, SUSPENDUE, TERMINAISON, EN EXECUTION
+            $table->enum('status', ['PENDING', 'ACCEPTED', 'FINISH', 'REJECTED'])->default('PENDING');
+            // EN ATTENTE, TRAITEMENT, TERMINEE, REJETEE
             $table->timestamps(); 
-            $table->foreign('activity_id')->references('id')->on('activities');
-            $table->foreign('user_id')->references('id')->on('users');
+            
+            $table->foreign('activity_id')->references('id')->on('activities')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('folder_id')->references('id')->on('folders')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('service_id')->references('id')->on('services')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')
+                ->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

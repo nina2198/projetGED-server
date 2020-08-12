@@ -13,6 +13,8 @@ class FolderTypeSeeder extends Seeder
     public function run(\Faker\Generator $faker)
     {
         factory(FolderType::class, 10)->make()->each(function ($folder_type) use ($faker) {
+            $schemas = App\Models\Schema\Schema::all();
+            $folder_type->schema_id = $faker->randomElement($schemas)->id;
             $folder_type->save();
         });
     }

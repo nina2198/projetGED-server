@@ -32,6 +32,11 @@ class DatabaseSeeder extends Seeder
             PermissionUserSeeder::class,
             PermissionRoleSeeder::class,
         ]);
+
+        //module Schema
+        $this->call([
+            SchemaSeeder::class
+        ]);
         
         //module folder
         $this->call([
@@ -40,16 +45,17 @@ class DatabaseSeeder extends Seeder
             FileTypeSeeder::class,
             FileSeeder::class
         ]);
-    
-        //module Schema
+
+        //module Services
         $this->call([
-            SchemaSeeder::class
+            ServiceSeeder::class
         ]);
       
-      //module Activites
-      $this->call([
+        //module Activites
+        $this->call([
             ActivitySeeder::class,
-      ]);
+            ActivityInstanceSeeder::class,
+        ]);
 
         Schema::enableForeignKeyConstraints();
         Model::reguard();

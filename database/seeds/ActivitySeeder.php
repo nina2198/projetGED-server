@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Models\Activity\Activity;
 
 class ActivitySeeder extends Seeder
 {
@@ -11,6 +12,10 @@ class ActivitySeeder extends Seeder
      */
     public function run(\Faker\Generator $faker)
     {
-        factory('App\Models\Activity\Activity', 20)->create();
+        factory(Activity::class, 30)->make()->each(function ($activity) use ($faker) {
+            $services = App\Models\Service\Service::all();
+            $activity->service_id = $faker->randomElement($services)->id;
+            $activity->save();
+        });
     }
 }

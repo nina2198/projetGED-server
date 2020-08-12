@@ -2,12 +2,13 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\Activity\Activity;
 use Faker\Generator as Faker;
+use App\Models\Activity\Activity;
 
 $factory->define(Activity::class, function (Faker $faker) {
     return [
-        'service_id'=> $faker->numberBetween(1, 20), 
-        'description' => $faker->unique()->text(30),
+        'name' => $faker->unique()->text(20),
+        'description' => $faker->sentence()
     ];
+
 });
