@@ -15,7 +15,7 @@ class CreateFileTypesTable extends Migration
     {
         Schema::create('file_types', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->unique();
+            $table->string('name');
             $table->text('description');
             $table->Enum('file_type', ['PDF', 'PHOTO']);
             $table->double('max_size')->nullable();

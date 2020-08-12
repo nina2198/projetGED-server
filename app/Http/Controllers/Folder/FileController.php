@@ -65,6 +65,7 @@ class FileController extends Controller
         $file->folder_id = $data['folder_id'];
         if(isset($data['path'])) $file->path = $data['path'];
         $file->save();
+        $file->path = url($file->path);
 
         return response()->json($file);
     }
