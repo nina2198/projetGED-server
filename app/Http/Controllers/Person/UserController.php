@@ -63,6 +63,8 @@ class UserController extends Controller
             $user->birth_place = $data['birth_place'];
         if (isset($data['service_id'])) 
             $user->service_id = $data['service_id'];
+        if (isset($data['language'])) 
+            $user->language = $data['language'];
         $user->save();
 
         return response()->json($user);
@@ -133,6 +135,8 @@ class UserController extends Controller
             $user->birth_place = $data['birth_place'];
         if (isset($data['files'])) 
             $user->avatar = $data['files'];
+        if (isset($data['language'])) 
+            $user->language = $data['language'];
         if (isset($data['tel']))
              $user->tel = $data['tel'];
 
