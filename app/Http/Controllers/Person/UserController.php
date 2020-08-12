@@ -103,16 +103,16 @@ class UserController extends Controller
             return response()->json($apiError, 404);
         }
 
-        $data = $req->except('avatar');
+        $data = $req->except('files');
 
         if (isset($data['password']) && strlen($data['password']) >= 4) {
             $data['password'] = bcrypt($data['password']);
         }
 
         //upload image
-        if ($file = $req->file('avatar')) {
-            $filePath = $this->uploadSingleFile($req, 'avatar', 'users-avatar', ['file', 'mimes:jpg,png,gif,jpeg']);
-            $data['avatar'] = $filePath['saved_file_path'];
+        if ($file = $req->file('files')) {
+            $filePath = $this->uploadSingleFile($req, 'files', 'users-avatar', ['file', 'mimes:jpg,png,gif,jpeg']);
+            $data['files'] = $filePath['saved_file_path'];
         }
 
         if (isset($data['login'])) 
@@ -131,12 +131,13 @@ class UserController extends Controller
             $user->birth_date = $data['birth_date'];
         if (isset($data['birth_place'])) 
             $user->birth_place = $data['birth_place'];
-        if (isset($data['avatar'])) 
-            $user->avatar = $data['avatar'];
+        if (isset($data['files'])) 
+            $user->avatar = $data['files'];
         if (isset($data['tel']))
              $user->tel = $data['tel'];
 
         $user->update();
+        $user->avatar = url($user->avatar);
 
         return response()->json($user);
     }
