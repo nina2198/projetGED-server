@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ActivityInstance extends Model
 {
     protected $guarded = [];
-
+    protected $table = 'activity_instance';
     /**
      * Get the activity for this instance
      */
@@ -29,4 +29,5 @@ class ActivityInstance extends Model
     public function service() {
         return $this->belongsTo('App\Models\Service\Service', 'service_id') ;
     }
+
 }

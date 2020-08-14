@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Person;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Person\User;
+use App\Models\Service\Service;
 use App\Models\APIError;
 use App\Helpers\Helper;
 
@@ -69,6 +70,46 @@ class UserController extends Controller
 
         return response()->json($user);
     }
+
+    public function createInternalUser(Request $req)
+    {
+        $data = $req->only(['first_name','last_name','job','email','gender','birth_date','birth_place','language','tel', 'service_id' ]);
+
+        $this->validate($data, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'job' => 'required|in:EMPLOYEE,ADMINISTRATOR',
+            'email' => 'required|unique:users',
+            'gender' => 'required',
+            'service_id' => 'required:exist:services:id'
+        ]);
+       
+        $user = new User();
+        $user->email = $data['email'];
+        $user->gender = $data['gender'];
+        $user->first_name = $data['first_name'];
+        $user->last_name = $data['last_name'];
+        $user->job = $data['job'];
+        $user->service_id = $data['service_id'];
+        if (isset($data['tel'])) 
+            $user->tel = $data['tel'];
+        if (isset($data['birth_date'])) 
+            $user->birth_date = $data['birth_date'];
+        if (isset($data['birth_place'])) 
+            $user->birth_place = $data['birth_place'];
+        if (isset($data['language'])) 
+            $user->language = $data['language'];
+        $user->password = Helper::generate_password();
+        $user->login = Helper::generate_login();
+        $user->save();
+        $service = Service::find($user->service_id);
+        if($user->job == 'EMPLOYEE')
+            Helper::send_connexion_data_to_employee($user, $service);
+        if($user->job == 'ADMINISTRATOR')
+            Helper::send_connexion_data_to_admin($user, $service);
+        return response()->json($user);
+    }
+
 
     public function find($id) {
         if(!$user = User::find($id)) {

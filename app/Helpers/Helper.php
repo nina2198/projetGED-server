@@ -54,20 +54,54 @@ class Helper extends Controller
         return $password;
     }
 
-    public static function send_connexion_data_to_user($receiver) {
+    public static function generate_login() {
+        do {
+            $random = str_shuffle('abcdefABCDEF0123456789_-');
+            $login = substr($random, 0, 8); 
+            $userFound = User::whereLogin($login)->first(); 
+        } while($userFound);
+        return $login;
+    }
+
+
+    public static function send_connexion_data_to_employee($receiver, $service) {
 
         $to_name = $receiver['first_name'] . ' ' . $receiver['last_name'];
         $to_email = $receiver['email'];
 
         $data = array(
-            'companie_name'=> Helper::$companie_name,
-            'receiver'=> $receiver,
+            'companie_name' => Helper::$companie_name,
+            'receiver' => $receiver,
+            'service' => $service
         );
             
         try {
-            Mail::send('emails.body_connexion_data', $data, function($message) use ($to_name, $to_email) {
+            Mail::send('emails.body_connexion_data_employee', $data, function($message) use ($to_name, $to_email) {
                 $message->to($to_email, $to_name)
-                ->subject('Vous avez reçu vos identifiants pour la connexion à la platforme users-manager');
+                ->subject('Vous avez reçu vos identifiants pour la connexion à la platforme GEPAD');
+                
+                $message->from(Helper::$companie_email, Helper::$companie_name);
+            });
+        } catch(Exception $e) {
+            return response()->json($e);
+        }
+    }
+
+    public static function send_connexion_data_to_admin($receiver, $service) {
+
+        $to_name = $receiver['first_name'] . ' ' . $receiver['last_name'];
+        $to_email = $receiver['email'];
+
+        $data = array(
+            'companie_name' => Helper::$companie_name,
+            'receiver' => $receiver,
+            'service' => $service
+        );
+            
+        try {
+            Mail::send('emails.body_connexion_data_admin', $data, function($message) use ($to_name, $to_email) {
+                $message->to($to_email, $to_name)
+                ->subject('Vous avez reçu vos identifiants pour la connexion à la platforme GEPAD');
                 
                 $message->from(Helper::$companie_email, Helper::$companie_name);
             });

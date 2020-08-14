@@ -19,4 +19,9 @@ class Service extends Model
     {
         return $this->hasMany('App\Models\Person\User');
     }
+
+    //Un service est implique dans plusieurs instances d'activite
+    public function activityInstances() {
+        return $this->hasMany('App\Models\Activity\ActivityInstance');
+    }
 }

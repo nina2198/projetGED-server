@@ -35,6 +35,7 @@ Route::group(['prefix' => 'persons'], function () {
         Route::get('/{id}', 'Person\UserController@find');
         Route::get('/email/{email}', 'Person\UserController@findByEmail');
         Route::post('/', 'Person\UserController@create');
+        Route::post('/internal-user', 'Person\UserController@createInternalUser');
         Route::delete('/{id}', 'Person\UserController@destroy');
         Route::match(['post', 'put'],'/{id}', 'Person\UserController@update');
         Route::get('/status/{id}', 'Person\UserController@instances_waiting');
@@ -77,7 +78,8 @@ Route::group(['prefix' => 'persons'], function () {
 });
 
 Route::group(['prefix' => 'folders'], function () {
-
+    // Recuperer le pourcentage de progression du dossier
+    Route::post('/pourcent', 'Activity\ActivityInstancesController@getFolderProgressionPourcentage');
     Route::get('/', 'Folder\FolderController@index');
     Route::get('/{id}', 'Folder\FolderController@find');
     Route::get('/track/{track_id}', 'Folder\FolderController@findByTrackId');
@@ -131,9 +133,11 @@ Route::group(['prefix' => 'folders'], function () {
 
 Route::group(['prefix' => 'activities'], function(){
     Route::get('/', 'Activity\ActivitiesController@index');
-    Route::get('/j', 'Activity\ActivitiesController@join');
-    Route::post('/create', 'Activity\ActivitiesController@create');
+    Route::post('/', 'Activity\ActivitiesController@create');
     Route::get('/{id}', 'Activity\ActivitiesController@find') ;
+    Route::get('/service/{id}', 'Activity\ActivitiesController@service');
+    Route::get('/activity_instances/{id}', 'Activity\ActivitiesController@activitiesInstances');
+    Route::get('/schemas/{id}', 'Activity\ActivitiesController@schemas');
     Route::match(['post', 'put'], '/{id}', 'Activity\ActivitiesController@update') ;
     Route::get('/inst/{id}', 'Activity\ActivitiesController@activities_instances');
     Route::get('/service/{id}', 'Activity\ActivitiesController@service');
@@ -146,27 +150,32 @@ Route::group(['prefix' => 'activity_instances'], function(){
     Route::get('/{id}', 'Activity\ActivityInstancesController@find');
     Route::get('/activity/{id}', 'Activity\ActivityInstancesController@activity');
     Route::get('/user/{id}', 'Activity\ActivityInstancesController@user'); 
-    Route::get('/pourcent/{id}', 'Activity\ActivitySchemasController@getFolderProgressionPourcentage');
-    Route::get('/ordre/{id}', 'Activity\ActivitySchemasController@getActivityOrderAndServiceNumber');
-    Route::get('/ordr/{id}', 'Activity\ActivitySchemasController@getFolderPoucentage');
-
-
-    Route::post('/init/{schema_id}/{track_id}', 'Activity\ActivityInstancesController@initialiserInstance');
-    Route::get('/folder/{id}', 'Activity\ActivityInstancesController@getIdFolder');
-    Route::post('/edit/{id}', 'Activity\ActivityInstancesController@edit');
-
+    // Creer la premiere instance d'activite
+    Route::get('/initialize_instance/{id}', 'Activity\ActivityInstancesController@initialiserInstance');
+    // Creer la prochaine instance d'activite
+    Route::get('/create_next_activity/{current_activity_instance_id}', 'Activity\ActivityInstancesController@onApproveFolder');
+    // Rejected un dossier dans un service
+    Route::get('/reject_folder/{activity_instance_id}', 'Activity\ActivityInstancesController@onRejectFolder');
 });
 
  // Service module : 'middleware' => 'auth:api',
  Route::group(['prefix' => 'services'], function () {
     Route::get('/', 'Service\ServiceController@index');
+    Route::get('/all', 'Service\ServiceController@all');
     Route::get('/{id}', 'Service\ServiceController@find');
     Route::get('/search', 'Service\ServiceController@search');
     Route::delete('/{id}', 'Service\ServiceController@destroy');
-    Route::match(['post', 'put'],'/update/{id}', 'Service\ServiceController@update');
     Route::post('/', 'Service\ServiceController@create');
+    Route::match(['post', 'put'],'/{id}', 'Service\ServiceController@update');
     Route::get('/activities/{id}', 'Service\ServiceController@activities');
-    Route::get('/u/{id}', 'Service\ServiceController@users');
+    Route::get('/users/{id}', 'Service\ServiceController@users'); 
+
+    //le service auquel un user est administrateur
+    Route::get('/serviceByAdmin/{admin_id}', 'Service\ServiceController@serviceByAdmin');
+    //liste des dossiers rejetees par un administrateur dans un service
+    Route::get('/listFoldersRejecteced/{service_id}/{admin_id}', 'Service\ServiceController@listFoldersRejecteced');
+    Route::get('/listFoldersPending/{service_id}', 'Service\ServiceController@listFoldersPending');
+
 });
 
 Route::group(['prefix' => 'schemas'], function () {

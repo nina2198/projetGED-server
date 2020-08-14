@@ -57,6 +57,10 @@ class DatabaseSeeder extends Seeder
             ActivityInstanceSeeder::class,
         ]);
 
+        $this->call([
+            ActivitySchemaSeeder::class,
+        ]);
+
         Schema::enableForeignKeyConstraints();
         Model::reguard();
     }

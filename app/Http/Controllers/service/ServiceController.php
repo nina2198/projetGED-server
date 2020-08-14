@@ -6,7 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Service\Service;
 use Illuminate\Http\Request;
 use App\Models\APIError;
+use App\Models\Activity\ActivityInstance;
 
+
+ /**
+ * Update a service on database
+ * @author NGOMSEU
+ * @email ngomseuromaric@gmail.com
+ * @param  \Illuminate\Http\Request  $request
+ * @param  $id
+ * @return \Illuminate\Http\Response
+ */
 class ServiceController extends Controller
 {
     
@@ -16,153 +26,152 @@ class ServiceController extends Controller
        return response()->json($data);
    }
 
-    
-    public function store(){ }
-
+   public function all()
+   {
+       $data = Service::all();
+       return response()->json($data);
+   }
 
     public function create(Request $req)
     {
-        $data = $req->only('name');
-
+        $data = $req->only('name', 'admin_id', 'building');
         $this->validate($data, [
             'name' => 'required',
+            'admin_id' => 'required:exist:users:id'
         ]);
-
-            $Service = new Service();
-            $Service->name = $data['name'];
-            $Service->save();
-       
+        $Service = new Service();
+        $Service->name = $data['name'];
+        $Service->admin_id = $data['admin_id'];
+        if(isset($data['building']))
+            $Service->building = $data['building'];
+        $Service->save();
         return response()->json($Service);
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\service\Service  $service
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Service $service)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\service\Service  $service
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Service $service)
-    {
-        //
-    }
-
-    /**
-     * Update a service on database
-     * @author NGOMSEU
-     * @email ngomseuromaric@gmail.com
-     * @param  \Illuminate\Http\Request  $request
-     * @param  $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function update(Request $req, $id)
     {
          if(!$service = Service::find($id)) {
             $apiError = new APIError;
             $apiError->setStatus("404");
-            $apiError->setCode("SERVICE_DON'T_EXIST");
-            $apiError->setMessage("Le Nom de ce Service n'existe pas");
+            $apiError->setCode("SERVICE_NOT_FOUND");
+            $apiError->setMessage('Service id ' .$id . ' not found in database.');
             return response()->json($apiError, 404);
         }
-
-        $data = $req->only('name');
+        $data = $req->only(['name', 'admin_id', 'building']);
         if (isset($data['name'])) 
             $service->name = $data['name'];
+        if (isset($data['admin_id'])) 
+            $service->admin_id = $data['admin_id'];
+        if (isset($data['building'])) 
+            $service->building = $data['building'];
         $service->update();
         return response()->json($service);
     }
 
-    
- /**
-     * Remove a service from database
-     * @author NGOMSEU
-     * @email ngomseuromaric@gmail.com
-     * @param  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         if (!$service = Service::find($id)) {
             $unauthorized = new APIError;
             $unauthorized->setStatus("404");
-            $unauthorized->setCode("ASSIGNMENT_NOT_FOUND");
-            $unauthorized->setMessage("Service id not found in database.");
-
+            $unauthorized->setCode("SERVICE_NOT_FOUND");
+            $unauthorized->setMessage('Service id ' .$id . ' not found in database.');
             return response()->json($unauthorized, 404);
         }
-
         $service->delete();      
-        return response()->json($service);
+        return response()->json(null);
     }
 
-    /**
-     * Search a service from database
-     * @author NGOMSEU
-     * @email ngomseuromaricl@gmail.com
-     * @param  \Illuminate\Http\Request  $req
-     * @return \Illuminate\Http\Response
-     */
     public function search(Request $req)
     {
         $this->validate($req->all(), [
-            'name' => 'present',
+            'q' => 'present',
+            'field' => 'present'
         ]);
-
-        $data = Service::where('name', 'like', "%$req->name%")
-            ->get();
-
+        $data = Service::where($req->field, 'like', "%$req->q%")->simplePaginate($req->has('limit') ? $req->limit : 15);
         return response()->json($data);
     }
 
-    /**
-     * find a spacific assignement 
-     * @author NGOMSEU
-     */
     public function find($id){
-        $service = Service::find($id);
-        if($service == null){
+        if(!$service = Service::find($id)){
             $unauthorized = new APIError;
             $unauthorized->setStatus("404");
-            $unauthorized->setCode("ASSIGNMENT_NOT_FOUND");
-            $unauthorized->setMessage("Service id not found in database.");
-
+            $unauthorized->setCode("SERVICE_NOT_FOUND");
+            $unauthorized->setMessage('Service id ' .$id . ' not found in database.');
             return response()->json($unauthorized, 404);
         }
         return response()->json($service);
     }
 
-    /**
-     * @author NGOMSEU
-     * Get all the activity for the service
-     */
     public function activities(Request $req, $id)
     {
-        //activitiesInstances : function define in the  model activity 
-        $activities = Service::simplePaginate($req->has('limit') ? $req->limit : 15)->find($id)->activities;
-                              
+        if(!$service = Service::find($id)){
+            $unauthorized = new APIError;
+            $unauthorized->setStatus("404");
+            $unauthorized->setCode("SERVICE_NOT_FOUND");
+            $unauthorized->setMessage('Service id ' .$id . ' not found in database.');
+            return response()->json($unauthorized, 404);
+        }
+        $activities = Service::find($id)->activities;
         return response()->json($activities);
     }
 
-     /**
-     * @author NGOMSEU
-     * Get all the users for the service
-     */
     public function users(Request $req, $id)
     {
-        //activitiesInstances : function define in the  model activity 
-        $users = Service::simplePaginate($req->has('limit') ? $req->limit : 15)->find($id)->users;
-                              
+        if(!$service = Service::find($id)){
+            $unauthorized = new APIError;
+            $unauthorized->setStatus("404");
+            $unauthorized->setCode("SERVICE_NOT_FOUND");
+            $unauthorized->setMessage('Service id ' .$id . ' not found in database.');
+            return response()->json($unauthorized, 404);
+        }
+        $users = Service::find($id)->users;
         return response()->json($users);
     }
 
+    //donne le service de l'administrateur
+    public function serviceByAdmin($admin_id)
+    {
+        $service = Service::whereAdminId($admin_id)->first();
+        return response()->json($service, 200);
+    }
+
+    public function listFoldersRejecteced($service_id, $admin_id)
+    {
+        $service = Service::whereId($service_id)->first();
+        //recupere toutes les instances d'activites ou le service est ou a ete concerne
+        $activity_instance = $service->activityInstances()->where(['status' => 'REJECTED']);
+
+        return response()->json($activity_instance, 200);
+    }
+
+    public function listFoldersPending($service_id)
+    {
+        $folder = ActivityInstance::select('folders.*')
+                    ->join('services', 'services.id', '=', 'activity_instance.service_id')
+                    ->join('folders', 'folders.id', '=', 'activity_instance.folder_id')
+                    ->where([
+                        'activity_instance.service_id' => $service_id, 
+                        'folders.status' => 'PENNDING'])->get();   
+        return response()->json($folder, 200);
+    }
+
+    public function listFoldersRejected($service_id, $admin_id)
+    {
+        $activity_instance = ActivityInstance::select('*')
+                ->where(['service_id' => $service_id, 'status' => 'REJECTED'])
+                ->get();   
+                      
+        return response()->json($activity_instance, 200);
+    }
+
+    public function listFoldersFinish($service_id, $admin_id)
+    {
+        $activity_instance = ActivityInstance::select('*')
+                ->where([
+                    'service_id' => $service_id,
+                    'status' => 'FINISH'])
+                ->get();   
+                      
+        return response()->json($activity_instance, 200);
+    }
 }

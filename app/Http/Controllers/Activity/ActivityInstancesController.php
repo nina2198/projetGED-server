@@ -24,144 +24,185 @@ use App\Models\Service\Service;
 
 class ActivityInstancesController extends Controller
 {
+
+    public function index(Request $req)
+    {
+        $activity_instance = ActivityInstance::simplePaginate($req->has('limit') ? $req->limit : 15);
+        return response()->json($activity_instance); 
+    }
+
+    public function find($id)
+    {
+        if(!$activityInstance = ActivityInstance::find($id)) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode("ACTIVITY_INSTANCE_NOT_FOUND");
+            $apiError->setMessage("L'instance d'activite d'id $id n'existe pas");
+            return response()->json($apiError, 404);
+        }
+        return response()->json($activityInstance);
+    }
     /**
      * return the id of the folder where track_id correspond
      */
-    public static function getIdFolder($track_id){
-        $folder =  Folder::select('folders.*')->where(['folders.track_id' => $track_id])->first() ;
-        return $folder->id ;
+    public function getFolderByTrackId($track_id){
+        if(!$folder=Folder::whereTrackId($track_id)->first()) {
+            $apiError = new APIError;
+            $apiError->setStatus("401");
+            $apiError->setCode("FOLDER_NOT_FOUND");
+            $apiError->setMessage("Le dossier de track_id $track_id n'existe pas");
+            return response()->json($apiError, 401);
+        }
+        return $folder;
     }
 
+    public function getFolderById($id){
+        $folder =  Folder::find($id);
+        return $folder;
+    }
     /**
      * A UTILISER POUR DEMARRER LE PROCESSUS DE TRAITEMENT D'UN DOSSIER DANS L'APPLICATION
      * DE FACON AUTOMATIQUE LORSQUON LE SOUMET POUR SUIVRE UN SCHEMA DONNE DE TRAITEMENT
      * @author Ulrich Bertrand
      * par defaut le traitement de l'activité est assigné à chaque admin du service correspondant
      */
-    public static function initialiserInstance($schema_id, $track_id)
+    public function initialiserInstance($folder_id)
     {
-            //Obtend the id of folder in the table 
-        $folder_id = ActivityInstancesController::getIdFolder($track_id); 
-            //recupere dans la table activity_schema la premiere activité a effectuer.
-        $activity_id = ActivitySchema::select('*')
-        ->join('schemas', 'activity_schemas.schema_id', '=', 'schemas.id')
-        ->where([
-            'schemas.id' => +$schema_id,
-            'activity_schemas.activity_order' => 1
-        ])->first()->activity_id;
+        // On recupere le dossier pour lequel on veut effectuer un premier traitement dans un service precis
+        $folder = $this->getFolderById($folder_id); 
+        // On recupere le type du dossier correspondant
+        $folder_type = $folder->folderType;
+        // On recupere le schema du type de dossier
+        $schema = $folder_type->schema;
+        // On recupere la premiere activite du schema
+        $activity_schema = ActivitySchema::whereSchemaId($schema->id)->orderBy('activity_order', 'asc')->first();
+        $activity = Activity::find($activity_schema->activity_id);
+        // On recupere le service dans lequel la premier activite sera effectue
+        $service = $activity->service;
 
-        $service_id = Activity::find($activity_id)->service_id ;
-        $user_id = Service::select('admin_id')->
-                join('admin_services','admin_services.service_id','=', 'services.id')
-                ->where(['admin_services.service_id' =>$service_id])->first()->admin_id ; 
-
+        // On creer l'instance d'activite correspondante avec l'id du dossier, 
+        // l'id de la premiere activite a suivre par le dossier, l'id du service
+        // et l'id de l'administrateur du service qui se chargera d'executer le premiere activite
         $activity_instance = new ActivityInstance();
-        $activity_instance->folder_id = $folder_id ;
-        $activity_instance->activity_id = $activity_id ;
-        $activity_instance->user_id = $user_id ;
-        $activity_instance->service_id = $service_id ;
-        $activity_instance->save() ;
+        $activity_instance->folder_id = $folder->id;
+        $activity_instance->activity_id = $activity->id;
+        $activity_instance->service_id = $service->id;
+        $activity_instance->user_id = $service->admin_id;
+        $activity_instance->save();
+
         return response()->json($activity_instance) ;
     }
+     /**
+   * A n'utiliser que dans le fonctionnement interne de l'application
+   */
+    public function getFolderProgressionPourcentage(Request $req) {
+        $data = $req->only(['track_id', 'user_id']);
+        $this->validate($data, [
+            'track_id' => 'required:exist:folders:track_id',
+            'user_id' => 'required:exist:users:id'
+        ]);
+        $user = User::find($data['user_id']);
+        $folder = $this->getFolderByTrackId($data['track_id']);
 
-    public function index(Request $req) //list of all the traitments in the system
-    {
-        $activity_instance = ActivityInstance::simplePaginate($req->has('limit') ? $req->limit : 15);
-        return response()->json($activity_instance); 
-    }
-
-    public function find($id) //find the instance activity by the id
-    {
-        if(!$activityInstance = ActivityInstance::find($id)) {
+        if($folder->user_id != $user->id) {
             $apiError = new APIError;
-            $apiError->setStatus("404");
-            $apiError->setCode("ACTIVITY_DON'T_EXIST");
-            $apiError->setMessage("AUCUNE INSTANCE D'ACTIVITE EXISTENTE POUR CETTE id $id");
-            return response()->json($apiError, 404);
+            $apiError->setStatus("401");
+            $apiError->setCode("UNAUTHORIZED_ACCESS_TO_FOLDER");
+            $apiError->setMessage("L'access a ce dossier est interdit pour cet utilisateur");
+            return response()->json($apiError, 401);
         }
-        return response()->json($activityInstance);
-    }
 
-    public function create(Request $req){}
+        // On recupere le type du dossier correspondant
+        $folder_type = $folder->folderType;
+        // On recupere le schema du type de dossier
+        $schema = $folder_type->schema;
+        //recuper l'instance la plus courante en cours de traitement du dossier
+        $activity_instance = $folder->activityInstances()->orderBy('created_at','DESC')->first();
 
-    /**
-     * @return activity_instance that the state status of this @param id take in paramater is
-     */
-    public static function update($id, $status)
-    {
-        if(!$activityInstance = ActivityInstance::find($id)) {
-            $apiError = new APIError;
-            $apiError->setStatus("404");
-            $apiError->setCode("ACTIVITY_INSTANCES_DON'T_EXIST");
-            $apiError->setMessage("L'instance d'activité d'id ". $id ."n'existe pas");
-            return response()->json($apiError, 404);
+        $activity = $activity_instance->activity ;
+        $activity_schema = ActivitySchema::whereActivityIdAndSchemaId($activity->id, $schema->id)->first();
+
+        if($activity_instance->status =='FINISH' && $schema->nb_activities == $activity_schema->activity_order){
+            $result = [
+                'data' => 100,
+                'status' => 'FINISH',
+                'service' => $activity->service
+            ];
+            return response()->json($result, 200);
         }
-            $activityInstance->status = $status;
-            $activityInstance->update();
-     return  response()->json($activityInstance) ;
-    }
-
-    /**
-     * set the status of the curent id with @param id 
-     * and if status=='ENDING' create the new instance for the next activity can do 
-     */
-    public static function getChangeStaus($id, $status){
-        if($activityInstance = ActivityInstance::find($id))
-        {
-            if($status =='ENDING'){ //si au niveau de l'instance actuelle le dossier est validé
-                $data = ActivitySchemasController::getActivityOrderAndServiceNumber($id) ;
-                if($data){
-                    $folder_id = $data->folder_id ;
-                    if($data->service_number > $data->activity_order){
-                        $schema_id = $data->schema_id ;
-                        $activity_id = ActivitySchemasController:: getFutureActivity($schema_id, $data->activity_order);
-                        $service = ActivitySchemasController:: getAdminServiceId($activity_id->activity_id) ; 
-                        
-                        $service_id = $service->service_id ;
-                        $user_id = $service->user_id ;
-
-                        $activity_instance = new ActivityInstance();
-                        $activity_instance->folder_id = $folder_id;
-                        $activity_instance->activity_id = $activity_id->activity_id;
-                        $activity_instance->user_id = $user_id ;
-                        $activity_instance->service_id = $service_id ;
-
-                        $activity_instance->save();
-                        return response()->json($activity_instance) ;
-                    }
-                    else if($data->service_number = $data->activity_order){
-                        //dernier activité traité le dossier doit etre archivé 
-                        $folder = Folder::find($folder_id) ;
-                        $folder->status = 'ARCHIVED' ;
-                        $folder->update() ;
-                        return response()->json($folder) ;
-                    }
-                } 
-            }
-            else{
-                return response()->json(ActivityInstancesController:: update($id, $status));
-            }
+        if($activity_instance->status !='FINISH' && $schema->nb_activities == $activity_schema->activity_order){
+            $result = [
+                'data' => (($activity_schema->activity_order-1)/$schema->nb_activities)*100,
+                'status' => $activity_instance->status,
+                'service' => $activity->service
+            ];
+            return response()->json($result, 200);
+        }
+        if($schema->nb_activities > $activity_schema->activity_order){
+            $result = [
+                'data' => (($activity_schema->activity_order-1)/$schema->nb_activities)*100,
+                'status' => $activity_instance->status
+            ];
+            return response()->json($result, 200);
         }
     }
 
-    /**
-     * use this function to set the status of instance activity to set automaticaly creer the 
-     * new instance 
-     */
-    public function edit(Request $req, $id){
-        if(!$activityInstance = ActivityInstance::find($id)) {
-            $apiError = new APIError;
-            $apiError->setStatus("404");
-            $apiError->setCode("ACTIVITY_INSTANCES_DON'T_EXIST");
-            $apiError->setMessage("L'instance d'id ". $id ."n'existe pas");
-            return response()->json($apiError, 404);
+    public function onApproveFolder($current_activity_instance_id) {
+        // Chercher l'activite de l'instance d'activite courante
+        $current_activity_instance = ActivityInstance::find($current_activity_instance_id);
+        $current_activity = $current_activity_instance->activity;
+        
+        // Determiner le schema de l'activite courrante
+        $current_folder = $current_activity_instance->folder;
+        $current_folder_type = $current_folder->folderType;
+        $current_schema = $current_folder_type->schema;
+
+        // Determiner la table qui contient l'ordre de l'activite courrante dans le schema
+        $current_activity_schema = ActivitySchema::whereActivityIdAndSchemaId($current_activity->id, $current_schema->id)->first();
+        // Si l'activite courrante est la derniere activite du schema, on archive le dossier et on arrete les transactions
+        if($current_schema->nb_activities == $current_activity_schema->activity_order) {
+            $current_activity_instance->status = 'FINISH';
+            $current_folder->status = 'ARCHIVED';
+            $current_activity_instance->update();
+            $current_folder->update();
+            return response()->json(['data' => true]);
         }
-        $data = $req->only('status');
-        $activityInstance->status = $data['status'];
-        $activityInstance->update();
-        $status = $activityInstance['status']; 
-        return  $this-> getChangeStaus($id, $status);
+
+        // Si l'activite courrante n'est pas la derniere activite du schema
+        // Creer la prochaine instance d'activite pour la prochaine activite
+        $next_activity_schema = ActivitySchema::whereSchemaIdAndActivityOrder($current_schema->id, $current_activity_schema->activity_order + 1)->first();
+        // Determiner la prochaine activite
+        $next_activity = Activity::find($next_activity_schema->activity_id);
+        // On dertermine le service de l'activite suivante
+        $next_service = $next_activity->service;
+
+        // Changer le status de l'activite courrante
+        $current_activity_instance->status = 'FINISH';
+
+        // Creer l'instance d'activite suivante
+        $next_activity_instance = new ActivityInstance();
+        $next_activity_instance->folder_id = $current_folder->id;
+        $next_activity_instance->service_id = $next_service->id; 
+        $next_activity_instance->user_id = $next_service->admin_id;
+        $next_activity_instance->activity_id = $next_activity->id;
+        // Marquer l'activite precedente comme terminee
+        $current_activity_instance->update();
+        $next_activity_instance->save();
+        return response()->json($next_activity_instance, 200);
     }
+
+    public function onRejectFolder($activity_instance_id) {
+        $activity_instance = ActivityInstance::find($activity_instance_id);
+        if( $activity_instance->status == 'ARCHIVED')
+            return response()->json(['data' => false], 200); 
+        $activity_instance->status = 'REJECTED';
+        $folder = $activity_instance->folder;
+        $folder->status = 'REJECTED';
+        $folder->update();
+        $activity_instance->update();
+        return response()->json(['data' => true], 200);
+    }
+
     /*
      * Get the activity  for this instance
      */

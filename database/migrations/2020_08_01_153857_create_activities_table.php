@@ -17,7 +17,7 @@ class CreateActivitiesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('service_id');
             $table->string('name')->unique();
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->timestamps();
 
             $table->foreign('service_id')->references('id')->on('services');

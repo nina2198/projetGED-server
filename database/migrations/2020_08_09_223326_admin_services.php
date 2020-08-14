@@ -14,7 +14,7 @@ class AdminServices extends Migration
     public function up()
     {
         Schema::table('services', function (Blueprint $table) {
-            $table->unsignedBigInteger('admin_id')->nullable();
+            $table->unsignedBigInteger('admin_id');
 
             $table->foreign('admin_id')->references('id')->on('users');
         });
