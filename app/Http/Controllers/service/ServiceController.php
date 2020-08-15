@@ -7,6 +7,7 @@ use App\Models\Service\Service;
 use Illuminate\Http\Request;
 use App\Models\APIError;
 use App\Models\Activity\ActivityInstance;
+use App\Models\Folder\Folder;
 
 
  /**
@@ -144,34 +145,47 @@ class ServiceController extends Controller
         return response()->json($activity_instance, 200);
     }
 
-    public function listFoldersPending($service_id)
+    public function listFoldersPendingByService($service_id)
     {
-        $folder = ActivityInstance::select('folders.*')
+        $folder = Folder::select('folders.*')
+                    ->join('activity_instance', 'folders.id', '=', 'activity_instance.folder_id')
                     ->join('services', 'services.id', '=', 'activity_instance.service_id')
-                    ->join('folders', 'folders.id', '=', 'activity_instance.folder_id')
                     ->where([
-                        'activity_instance.service_id' => $service_id, 
-                        'folders.status' => 'PENNDING'])->get();   
+                        'activity_instance.service_id' => $service_id,
+                        'activity_instance.status' => 'PENDING',
+                        'folders.status' => 'PENDING'])
+                        ->orderBy('activity_instance.updated_at', 'ASC')->get();
         return response()->json($folder, 200);
     }
 
-    public function listFoldersRejected($service_id, $admin_id)
+    public function listFoldersRejectedByService($service_id, $admin_id)
     {
-        $activity_instance = ActivityInstance::select('*')
-                ->where(['service_id' => $service_id, 'status' => 'REJECTED'])
-                ->get();   
-                      
-        return response()->json($activity_instance, 200);
+        $folder = Folder::select('folders.*')
+        ->join('activity_instance', 'folders.id', '=', 'activity_instance.folder_id')
+        ->join('services', 'services.id', '=', 'activity_instance.service_id')
+        ->where([
+            'activity_instance.service_id' => $service_id,
+            'activity_instance.user_id' => $admin_id,
+            'activity_instance.status' => 'REJECTED',
+            'services.admin_id' => $admin_id, 
+            'folders.status' => 'REJECTED'])
+            ->orderBy('folders.updated_at', 'DESC')->get();
+        return response()->json($folder, 200);
     }
 
-    public function listFoldersFinish($service_id, $admin_id)
+    public function listFoldersFinishByService($service_id, $admin_id)
     {
-        $activity_instance = ActivityInstance::select('*')
-                ->where([
-                    'service_id' => $service_id,
-                    'status' => 'FINISH'])
-                ->get();   
-                      
-        return response()->json($activity_instance, 200);
+        $folder = Folder::select('folders.*')
+        ->join('activity_instance', 'folders.id', '=', 'activity_instance.folder_id')
+        ->join('services', 'services.id', '=', 'activity_instance.service_id')
+        ->where([
+            'activity_instance.service_id' => $service_id,
+            'activity_instance.user_id' => $admin_id,
+            'services.admin_id' => $admin_id, 
+            'activity_instance.status' => 'FINISH'])
+        ->orderBy('activity_instance.updated_at', 'DESC')->get();
+        return response()->json($folder, 200);
     }
+
+    
 }

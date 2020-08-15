@@ -173,9 +173,11 @@ Route::group(['prefix' => 'activity_instances'], function(){
     //le service auquel un user est administrateur
     Route::get('/serviceByAdmin/{admin_id}', 'Service\ServiceController@serviceByAdmin');
     //liste des dossiers rejetees par un administrateur dans un service
-    Route::get('/listFoldersRejecteced/{service_id}/{admin_id}', 'Service\ServiceController@listFoldersRejecteced');
-    Route::get('/listFoldersPending/{service_id}', 'Service\ServiceController@listFoldersPending');
-
+    Route::get('/listFoldersRejected/{service_id}/{admin_id}', 'Service\ServiceController@listFoldersRejectedByService');
+    //liste des dossiers en attentes de traitement dans un service
+    Route::get('/listFoldersPending/{service_id}', 'Service\ServiceController@listFoldersPendingByService');
+    //liste des dossiers traites et approuver dans un service au cours du temps
+    Route::get('/listFoldersFinish/{service_id}/{admin_id}', 'Service\ServiceController@listFoldersFinishByService');
 });
 
 Route::group(['prefix' => 'schemas'], function () {

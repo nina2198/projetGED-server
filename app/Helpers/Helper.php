@@ -132,5 +132,28 @@ class Helper extends Controller
             return response()->json($e);
         }
     }
+    public static function send_track_id_to_user($receiver, $track_id) {
+
+        $to_name = $receiver['first_name'] . ' ' . $receiver['last_name'];
+        $to_email = $receiver['email'];
+
+        $data = array(
+            'companie_name'=> Helper::$companie_name,
+            'receiver'=> $receiver,
+            'track_id'=> $track_id,
+        );
+            
+        try {
+            Mail::send('emails.body_connexion_track_id', $data, function($message) use ($to_name, $to_email) {
+                $message->to($to_email, $to_name)
+                ->subject('Voici le code a utiliser pour tracker l\'evolution de votre dossier.');
+                
+                $message->from(Helper::$companie_email, Helper::$companie_name);
+            });
+        } catch(Exception $e) {
+            return response()->json($e);
+        }
+    }
+
 
 }

@@ -141,7 +141,8 @@ class ActivityInstancesController extends Controller
         if($schema->nb_activities > $activity_schema->activity_order){
             $result = [
                 'data' => (($activity_schema->activity_order-1)/$schema->nb_activities)*100,
-                'status' => $activity_instance->status
+                'status' => $activity_instance->status,
+                'service' => $activity->service
             ];
             return response()->json($result, 200);
         }

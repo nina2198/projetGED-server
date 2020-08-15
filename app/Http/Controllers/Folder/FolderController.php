@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\Folder\Folder;
 use App\Models\Folder\File;
 use App\Models\Folder\FolderType;
-use App\Models\Persons\User;
+use App\Models\Person\User;
 use Carbon\Carbon;
 use App\Models\APIError;
 use Illuminate\Support\Str;
+use App\Helpers\Helper;
 
 class FolderController extends Controller
 {
@@ -61,6 +62,8 @@ class FolderController extends Controller
         $folder->name = $folder->name . '_GED_0.0.' . $folder->id;
         $folder->slug = $folder->name;
         $folder->update();
+        $user = User::find($folder->user_id);
+        Helper::send_track_id_to_user($user, $folder->track_id);
 
         return response()->json($folder);
     }
