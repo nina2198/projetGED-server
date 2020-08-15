@@ -35,18 +35,20 @@ class ServiceController extends Controller
 
     public function create(Request $req)
     {
-        $data = $req->only('name', 'admin_id', 'building');
+        $data = $req->only('name', 'admin_id', 'description', 'building');
         $this->validate($data, [
             'name' => 'required',
+            'description' => 'required',
             'admin_id' => 'required:exist:users:id'
         ]);
-        $Service = new Service();
-        $Service->name = $data['name'];
-        $Service->admin_id = $data['admin_id'];
+        $service = new Service();
+        $service->name = $data['name'];
+        $service->admin_id = $data['admin_id'];
+        $service->description = $data['description'];
         if(isset($data['building']))
-            $Service->building = $data['building'];
-        $Service->save();
-        return response()->json($Service);
+            $service->building = $data['building'];
+        $service->save();
+        return response()->json($service);
     }
    
     public function update(Request $req, $id)
@@ -58,9 +60,11 @@ class ServiceController extends Controller
             $apiError->setMessage('Service id ' .$id . ' not found in database.');
             return response()->json($apiError, 404);
         }
-        $data = $req->only(['name', 'admin_id', 'building']);
+        $data = $req->only(['name', 'admin_id', 'description', 'building']);
         if (isset($data['name'])) 
             $service->name = $data['name'];
+        if (isset($data['description'])) 
+            $service->description = $data['description'];
         if (isset($data['admin_id'])) 
             $service->admin_id = $data['admin_id'];
         if (isset($data['building'])) 

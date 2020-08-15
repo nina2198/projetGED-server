@@ -9,6 +9,7 @@ $factory->define(Service::class, function (Faker $faker) {
     return [
         'admin_id' => factory(App\Models\Person\User::class),
         'name'=> $faker->unique()->company,
+        'description'=> $faker->paragraph,
         'building'=> $faker->address,
     ];
 });

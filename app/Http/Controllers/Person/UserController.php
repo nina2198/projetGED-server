@@ -100,9 +100,12 @@ class UserController extends Controller
         if (isset($data['language'])) 
             $user->language = $data['language'];
         $user->password = Helper::generate_password();
+        $safe_password = $user->password;
         $user->login = Helper::generate_login();
+        $user->password = bcrypt($user->password);
         $user->save();
         $service = Service::find($user->service_id);
+        $user->password = $safe_password;
         if($user->job == 'EMPLOYEE')
             Helper::send_connexion_data_to_employee($user, $service);
         if($user->job == 'ADMINISTRATOR')
