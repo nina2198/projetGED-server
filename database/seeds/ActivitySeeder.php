@@ -10,12 +10,12 @@ class ActivitySeeder extends Seeder
      *
      * @return void
      */
-    public function run(\Faker\Generator $faker)
+    /*public function run(\Faker\Generator $faker)
     {
         factory(Activity::class, 30)->make()->each(function ($activity) use ($faker) {
             $services = App\Models\Service\Service::all();
             $activity->service_id = $faker->randomElement($services)->id;
             $activity->save();
         });
-    }
+    }*/
 }

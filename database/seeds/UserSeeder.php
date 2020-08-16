@@ -12,10 +12,11 @@ class UserSeeder extends Seeder
      */
     public function run(\Faker\Generator $faker)
     {
-        factory(User::class, 30)->make()->each(function ($user) use ($faker) {
+        /*factory(User::class, 30)->make()->each(function ($user) use ($faker) {
             $services = App\Models\Service\Service::all();
             $user->service_id = $faker->randomElement($services)->id;
             $user->save();
-        });
+        });*/
+        
     }
 }

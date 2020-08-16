@@ -12,6 +12,9 @@ use Carbon\Carbon;
 use App\Models\APIError;
 use Illuminate\Support\Str;
 use App\Helpers\Helper;
+use App\Models\Activity\ActivitySchema;
+use App\Models\Activity\ActivityInstance;
+use App\Models\Activity\Activity;
 
 class FolderController extends Controller
 {
@@ -62,10 +65,49 @@ class FolderController extends Controller
         $folder->name = $folder->name . '_GED_0.0.' . $folder->id;
         $folder->slug = $folder->name;
         $folder->update();
+        $this->initialiserInstance($folder->id);
         $user = User::find($folder->user_id);
         Helper::send_track_id_to_user($user, $folder->track_id);
 
         return response()->json($folder);
+    }
+
+    /**
+     * A UTILISER POUR DEMARRER LE PROCESSUS DE TRAITEMENT D'UN DOSSIER DANS L'APPLICATION
+     * DE FACON AUTOMATIQUE LORSQUON LE SOUMET POUR SUIVRE UN SCHEMA DONNE DE TRAITEMENT
+     * @author Ulrich Bertrand
+     * par defaut le traitement de l'activité est assigné à chaque admin du service correspondant
+     */
+    public function initialiserInstance($folder_id)
+    {
+        // On recupere le dossier pour lequel on veut effectuer un premier traitement dans un service precis
+        $folder = $this->getFolderById($folder_id); 
+        // On recupere le type du dossier correspondant
+        $folder_type = $folder->folderType;
+        // On recupere le schema du type de dossier
+        $schema = $folder_type->schema;
+        // On recupere la premiere activite du schema
+        $activity_schema = ActivitySchema::whereSchemaId($schema->id)->orderBy('activity_order', 'asc')->first();
+        $activity = Activity::find($activity_schema->activity_id);
+        // On recupere le service dans lequel la premier activite sera effectue
+        $service = $activity->service;
+
+        // On creer l'instance d'activite correspondante avec l'id du dossier, 
+        // l'id de la premiere activite a suivre par le dossier, l'id du service
+        // et l'id de l'administrateur du service qui se chargera d'executer le premiere activite
+        $activity_instance = new ActivityInstance();
+        $activity_instance->folder_id = $folder->id;
+        $activity_instance->activity_id = $activity->id;
+        $activity_instance->service_id = $service->id;
+        $activity_instance->user_id = $service->admin_id;
+        $activity_instance->save();
+
+        return response()->json($activity_instance) ;
+    }
+
+    public function getFolderById($id){
+        $folder =  Folder::find($id);
+        return $folder;
     }
 
     // Generation du track-id

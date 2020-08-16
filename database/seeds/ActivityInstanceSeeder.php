@@ -10,7 +10,7 @@ class ActivityInstanceSeeder extends Seeder
      *
      * @return void
      */
-    public function run(\Faker\Generator $faker)
+    /*public function run(\Faker\Generator $faker)
     {
         factory(ActivityInstance::class, 30)->make()->each(function ($activity_instance) use ($faker) {
             $activities = App\Models\Activity\Activity::all();
@@ -24,5 +24,5 @@ class ActivityInstanceSeeder extends Seeder
             $activity_instance->user_id = $faker->randomElement($users)->id;
             $activity_instance->save();
         });
-    }
+    }*/
 }

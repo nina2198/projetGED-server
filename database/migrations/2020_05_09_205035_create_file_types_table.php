@@ -18,7 +18,7 @@ class CreateFileTypesTable extends Migration
             $table->string('name');
             $table->text('description');
             $table->Enum('file_type', ['PDF', 'PHOTO']);
-            $table->double('max_size')->nullable();
+            $table->double('max_size')->nullable()->comment('taille du fichier en octet');
             $table->integer('folder_type_id');
             $table->softDeletes();
             $table->timestamps();

@@ -10,7 +10,7 @@ class ActivitySchemaSeeder extends Seeder
      *
      * @return void
      */
-    public function run(\Faker\Generator $faker)
+    /*public function run(\Faker\Generator $faker)
     {
         factory(ActivitySchema::class, 20)->make()->each(function ($activity_schema) use ($faker) {
             $activities = App\Models\Activity\Activity::all();
@@ -20,5 +20,5 @@ class ActivitySchemaSeeder extends Seeder
             $activity_schema->schema_id = $faker->randomElement($schemas)->id;
             $activity_schema->save();
         });
-    }
+    }*/
 }

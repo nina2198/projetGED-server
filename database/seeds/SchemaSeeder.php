@@ -10,10 +10,10 @@ class SchemaSeeder extends Seeder
      *
      * @return void
      */
-    public function run(\Faker\Generator $faker)
+   /* public function run(\Faker\Generator $faker)
     {
         factory(Schema::class, 30)->make()->each(function ($schema) use ($faker) {
             $schema->save();
         });
-    }
+    }*/
 }

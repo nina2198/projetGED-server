@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
             $table->date('birth_date')->nullable();
             $table->string('birth_place')->nullable();
             $table->string('avatar')->nullable();
-            $table->enum('job',['VISITOR', 'EMPLOYEE', 'ADMINISTRATOR', 'SUPERADMIN']);;
+            $table->enum('job',['VISITOR', 'EMPLOYEE', 'ADMINISTRATOR', 'SUPERADMIN']);
             $table->string('tel')->nullable();
             $table->string('language')->nullable();
             $table->enum('gender',['F', 'M']);

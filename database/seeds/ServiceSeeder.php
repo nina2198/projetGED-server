@@ -10,10 +10,10 @@ class ServiceSeeder extends Seeder
      *
      * @return void
      */
-    public function run(\Faker\Generator $faker)
+    /*public function run(\Faker\Generator $faker)
     {
         factory(Service::class, 20)->make()->each(function ($service) use ($faker) {
             $service->save();
         });
-    }
+    }*/
 }

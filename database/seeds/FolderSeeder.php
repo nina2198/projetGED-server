@@ -10,7 +10,7 @@ class FolderSeeder extends Seeder
      *
      * @return void
      */
-    public function run(\Faker\Generator $faker)
+    /*public function run(\Faker\Generator $faker)
     {
         factory(Folder::class, 100)->make()->each(function ($folder) use ($faker) {
             $users = App\Models\Person\User::all();
@@ -20,5 +20,5 @@ class FolderSeeder extends Seeder
             
             $folder->save();
         });
-    }
+    }*/
 }
