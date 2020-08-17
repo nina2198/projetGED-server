@@ -243,9 +243,11 @@ class FolderController extends Controller
             $apiError->setMessage("Le dossier d'id $id n'existe pas");
             return response()->json($apiError, 404);
         }
-
-         $files = File::where('folder_id',$id)->get();
-         return response()->json($files);
+         $files = $folder->files;
+         $folder->folderType;
+         foreach($files as $file)
+            $file->filetype;
+         return response()->json($folder);
 
     }
     //trouver tout les dossiers archivés

@@ -140,6 +140,13 @@ class ServiceController extends Controller
         return response()->json($service, 200);
     }
 
+    //donne le service de l'administrateur
+    public function IdserviceByAdmin($admin_id)
+    {
+        $service = Service::whereAdminId($admin_id)->first();
+        return $service->id;
+    }
+
     public function listFoldersRejecteced($service_id, $admin_id)
     {
         $service = Service::whereId($service_id)->first();
@@ -151,7 +158,7 @@ class ServiceController extends Controller
 
     public function listFoldersPendingByService($service_id)
     {
-        $folder = Folder::select('folders.*')
+        $folder = Folder::select('folders.*', 'activity_instance.id as activity_instance_id')
                     ->join('activity_instance', 'folders.id', '=', 'activity_instance.folder_id')
                     ->join('services', 'services.id', '=', 'activity_instance.service_id')
                     ->where([
@@ -164,7 +171,7 @@ class ServiceController extends Controller
 
     public function listFoldersRejectedByService($service_id, $admin_id)
     {
-        $folder = Folder::select('folders.*')
+        $folder = Folder::select('folders.*', 'activity_instance.id as activity_instance_id')
         ->join('activity_instance', 'folders.id', '=', 'activity_instance.folder_id')
         ->join('services', 'services.id', '=', 'activity_instance.service_id')
         ->where([
@@ -179,7 +186,7 @@ class ServiceController extends Controller
 
     public function listFoldersFinishByService($service_id, $admin_id)
     {
-        $folder = Folder::select('folders.*')
+        $folder = Folder::select('folders.*', 'activity_instance.id as activity_instance_id')
         ->join('activity_instance', 'folders.id', '=', 'activity_instance.folder_id')
         ->join('services', 'services.id', '=', 'activity_instance.service_id')
         ->where([
@@ -187,6 +194,33 @@ class ServiceController extends Controller
             'activity_instance.user_id' => $admin_id,
             'services.admin_id' => $admin_id, 
             'activity_instance.status' => 'FINISH'])
+        ->orderBy('activity_instance.updated_at', 'DESC')->get();
+        return response()->json($folder, 200);
+    }
+
+    public function listFoldersByService($service_id)
+    {
+        $folder = Folder::select('folders.*', 'activity_instance.id as activity_instance_id')
+        ->join('activity_instance', 'folders.id', '=', 'activity_instance.folder_id')
+        ->join('services', 'services.id', '=', 'activity_instance.service_id')
+        ->where([
+            'activity_instance.service_id' => $service_id,
+            'services.id' => $service_id, 
+            ])
+        ->orderBy('activity_instance.updated_at', 'DESC')->get();
+        return response()->json($folder, 200);
+    }
+
+    public function listFoldersAcceptedByService($service_id)
+    {
+        $folder = Folder::select('folders.*', 'activity_instance.id as activity_instance_id')
+        ->join('activity_instance', 'folders.id', '=', 'activity_instance.folder_id')
+        ->join('services', 'services.id', '=', 'activity_instance.service_id')
+        ->where([
+            'activity_instance.service_id' => $service_id,
+            'services.id' => $service_id, 
+            'folders.status' => 'ACCEPTED',
+            'activity_instance.status' => 'ACCEPTED'])
         ->orderBy('activity_instance.updated_at', 'DESC')->get();
         return response()->json($folder, 200);
     }

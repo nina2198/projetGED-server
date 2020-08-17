@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Auth;
 use \Carbon\Carbon;
+use App\Models\Service\Service;
 
 class AuthController extends Controller
 {
@@ -38,6 +39,10 @@ class AuthController extends Controller
                 $token->expires_at = Carbon::now()->addMonth();
             }
             $token->save();
+            if(isset($user->service_id)) {
+                if($service = Service::find($user->service_id))
+                    $user['service'] = $service;
+            }
 
             return response()->json([
                 'token' => [

@@ -60,4 +60,8 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\Activity\ActivityInstance');
     }
+
+    public function service() {
+        return $this->belongsTo('App\Models\Service\Service', 'admin_id');
+    }
 }

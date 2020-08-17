@@ -179,6 +179,7 @@ class ActivityInstancesController extends Controller
 
         // Changer le status de l'activite courrante
         $current_activity_instance->status = 'FINISH';
+        $current_folder->status = 'PENDING';
 
         // Creer l'instance d'activite suivante
         $next_activity_instance = new ActivityInstance();
@@ -188,6 +189,7 @@ class ActivityInstancesController extends Controller
         $next_activity_instance->activity_id = $next_activity->id;
         // Marquer l'activite precedente comme terminee
         $current_activity_instance->update();
+        $current_folder->update();
         $next_activity_instance->save();
         return response()->json($next_activity_instance, 200);
     }
@@ -204,6 +206,24 @@ class ActivityInstancesController extends Controller
         return response()->json(['data' => true], 200);
     }
 
+    
+    public function onTakeForTreatementFolder($current_activity_instance_id)
+    {
+        $activity_instance = ActivityInstance::select('*')->where([
+            'activity_instance.id' => $current_activity_instance_id,
+            ])->first();
+
+        $folder = Folder::select('*')->where([
+            'folders.id' => $activity_instance->folder_id,
+        ])->first();
+
+        $folder->status = 'ACCEPTED' ;
+        $activity_instance->status = 'ACCEPTED' ;
+
+        $folder->update();
+        $activity_instance->update();
+        return response()->json(true, 200);
+    }
     /*
      * Get the activity  for this instance
      */

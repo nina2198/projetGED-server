@@ -156,6 +156,9 @@ Route::group(['prefix' => 'activity_instances'], function(){
     Route::get('/create_next_activity/{current_activity_instance_id}', 'Activity\ActivityInstancesController@onApproveFolder');
     // Rejected un dossier dans un service
     Route::get('/reject_folder/{activity_instance_id}', 'Activity\ActivityInstancesController@onRejectFolder');
+    // Accepter un dossier dans un service pour effectuer un traitement
+    Route::get('/onTakeForTreatementFolder/{current_activity_instance_id}', 'Activity\ActivityInstancesController@onTakeForTreatementFolder');
+    
 });
 
  // Service module : 'middleware' => 'auth:api',
@@ -172,12 +175,18 @@ Route::group(['prefix' => 'activity_instances'], function(){
 
     //le service auquel un user est administrateur
     Route::get('/serviceByAdmin/{admin_id}', 'Service\ServiceController@serviceByAdmin');
+    //l'id du service auquel un user est administrateur
+    Route::get('/IdserviceByAdmin/{admin_id}', 'Service\ServiceController@IdserviceByAdmin');
     //liste des dossiers rejetees par un administrateur dans un service
     Route::get('/listFoldersRejected/{service_id}/{admin_id}', 'Service\ServiceController@listFoldersRejectedByService');
     //liste des dossiers en attentes de traitement dans un service
     Route::get('/listFoldersPending/{service_id}', 'Service\ServiceController@listFoldersPendingByService');
     //liste des dossiers traites et approuver dans un service au cours du temps
-    Route::get('/listFoldersFinish/{service_id}/{admin_id}', 'Service\ServiceController@listFoldersFinishByService');
+    Route::get('/listFoldersFinish/{service_id}/{admin_id}', 'Service\ServiceController@listFoldersFinishByService'); 
+    //liste de tous les dossiers du service
+    Route::get('/listFoldersByService/{service_id}', 'Service\ServiceController@listFoldersByService'); 
+    //liste de tous les dossiers accepter pour traitement du service
+    Route::get('/listFoldersAcceptedByService/{service_id}', 'Service\ServiceController@listFoldersAcceptedByService');
 });
 
 Route::group(['prefix' => 'schemas'], function () {
