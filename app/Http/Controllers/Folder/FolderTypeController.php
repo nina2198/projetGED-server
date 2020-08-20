@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Folder\FolderType;
 use Illuminate\Http\Request;
 use App\Models\APIError;
+use Illuminate\Support\Str;
 
 class FolderTypeController extends Controller
 {
@@ -15,6 +16,19 @@ class FolderTypeController extends Controller
         $data = FolderType::simplePaginate($req->has('limit') ? $req->limit : 15);
         return response()->json($data);
     }
+
+    // Retourner tout les type de dossier avec les types de fichiers associes
+    public function getAll()
+    {
+        $data = FolderType::select('folder_types.*')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        foreach ($data as $folder_type) {
+            $folder_type->fileTypes;
+        }
+        return response()->json($data);
+    }
+
    // Rechercher un type de dossier par son id
     public function find($id){
          $folder_type = new FolderType();
@@ -39,13 +53,17 @@ class FolderTypeController extends Controller
         return response()->json($data);
     }
 
-    // Créer un dossier
+    // Créer un type de dossier
     public function create(Request $req)
     {
         $data = $req->only(['name', 'description', 'max_file_size', 'file_number']);
         $this->validate($data, [
             'name' => 'required',
             'description' => 'required'
+        ]);
+        $data['slug'] = Str::slug($data['name'], '_');
+        $this->validate($data, [
+            'slug' => 'required:unique:folder_types:slug'
         ]);
 
         $folder_type = new FolderType();

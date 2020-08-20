@@ -12,7 +12,7 @@ class PermissionUserSeeder extends Seeder
     public function run(\Faker\Generator $faker)
     {
         factory(PermissionUser::class, 10)->make()->each(function ($permissionUser) use ($faker) {
-            $users = APP\Models\Person\Role::all();
+            $users = APP\Models\Person\User::all();
             $permissions = APP\Models\Person\Permission::all();
             $permissionUser->user_id = $faker->randomElement($users)->id;
             $permissionUser->permission_id = $faker->randomElement($permissions)->id;

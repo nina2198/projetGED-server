@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSchemasTable extends Migration
+class CreateFileTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,15 @@ class CreateSchemasTable extends Migration
      */
     public function up()
     {
-        Schema::create('schemas', function (Blueprint $table) {
+        Schema::create('file_types', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->text('description');
-            $table->unsignedBigInteger('nombre_service');
-            $table->timestamps();
+            $table->Enum('file_type', ['PDF', 'PHOTO']);
+            $table->double('max_size')->nullable()->comment('taille du fichier en octet');
+            $table->integer('folder_type_id');
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 
@@ -30,6 +32,6 @@ class CreateSchemasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('schemas');
+        Schema::dropIfExists('file_types');
     }
 }

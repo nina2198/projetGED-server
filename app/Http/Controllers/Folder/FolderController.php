@@ -5,10 +5,16 @@ namespace App\Http\Controllers\Folder;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Folder\Folder;
+use App\Models\Folder\File;
 use App\Models\Folder\FolderType;
-use App\Models\Persons\User;
+use App\Models\Person\User;
 use Carbon\Carbon;
 use App\Models\APIError;
+use Illuminate\Support\Str;
+use App\Helpers\Helper;
+use App\Models\Activity\ActivitySchema;
+use App\Models\Activity\ActivityInstance;
+use App\Models\Activity\Activity;
 
 class FolderController extends Controller
 {
@@ -16,6 +22,13 @@ class FolderController extends Controller
     public function index(Request $req)
     {
         $data = Folder::simplePaginate($req->has('limit') ? $req->limit : 15);
+        return response()->json($data);
+    }
+
+    // Retourner tout les dossiers d'un utilisateur donne
+    public function getUserFolders(Request $req, $id)
+    {
+        $data = Folder::whereUserId($id)->orderBy('created_at', 'desc')->get();
         return response()->json($data);
     }
 
@@ -46,12 +59,55 @@ class FolderController extends Controller
         $folder->folder_type_id = $data['folder_type_id'];
         $folder->track_id = $this->generateFolderTrackId();
         $folder_type = $this->getFolderType($data['folder_type_id']);
-        $folder->name = $folder_type->name;
+        $folder->name = $folder_type->slug;
+        $folder->slug = $folder->name;
         $folder->save();
         $folder->name = $folder->name . '_GED_0.0.' . $folder->id;
+        $folder->slug = $folder->name;
         $folder->update();
+        $this->initialiserInstance($folder->id);
+        $user = User::find($folder->user_id);
+        Helper::send_track_id_to_user($user, $folder->track_id);
 
         return response()->json($folder);
+    }
+
+    /**
+     * A UTILISER POUR DEMARRER LE PROCESSUS DE TRAITEMENT D'UN DOSSIER DANS L'APPLICATION
+     * DE FACON AUTOMATIQUE LORSQUON LE SOUMET POUR SUIVRE UN SCHEMA DONNE DE TRAITEMENT
+     * @author Ulrich Bertrand
+     * par defaut le traitement de l'activité est assigné à chaque admin du service correspondant
+     */
+    public function initialiserInstance($folder_id)
+    {
+        // On recupere le dossier pour lequel on veut effectuer un premier traitement dans un service precis
+        $folder = $this->getFolderById($folder_id); 
+        // On recupere le type du dossier correspondant
+        $folder_type = $folder->folderType;
+        // On recupere le schema du type de dossier
+        $schema = $folder_type->schema;
+        // On recupere la premiere activite du schema
+        $activity_schema = ActivitySchema::whereSchemaId($schema->id)->orderBy('activity_order', 'asc')->first();
+        $activity = Activity::find($activity_schema->activity_id);
+        // On recupere le service dans lequel la premier activite sera effectue
+        $service = $activity->service;
+
+        // On creer l'instance d'activite correspondante avec l'id du dossier, 
+        // l'id de la premiere activite a suivre par le dossier, l'id du service
+        // et l'id de l'administrateur du service qui se chargera d'executer le premiere activite
+        $activity_instance = new ActivityInstance();
+        $activity_instance->folder_id = $folder->id;
+        $activity_instance->activity_id = $activity->id;
+        $activity_instance->service_id = $service->id;
+        $activity_instance->user_id = $service->admin_id;
+        $activity_instance->save();
+
+        return response()->json($activity_instance) ;
+    }
+
+    public function getFolderById($id){
+        $folder =  Folder::find($id);
+        return $folder;
     }
 
     // Generation du track-id
@@ -82,6 +138,19 @@ class FolderController extends Controller
             $apiError->setStatus("404");
             $apiError->setCode("FOLDER_NOT_FOUND");
             $apiError->setMessage("Le dossier d'id $id n'existe pas");
+            return response()->json($apiError, 404);
+        }
+
+        return response()->json($folder);
+    }
+
+    // Rechercher un dossier par son track-id
+    public function findByTrackId($track_id) {
+        if(!$folder = Folder::whereTrackId($track_id)->first()) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode("FOLDER_NOT_FOUND");
+            $apiError->setMessage("Le dossier de track_id $track_id n'existe pas");
             return response()->json($apiError, 404);
         }
 
@@ -127,5 +196,63 @@ class FolderController extends Controller
         $folder->delete();
 
         return response()->json(null);
+    }
+
+    public function getAcceptedFolders($user_id) {
+        $data = Folder::select('folders.*', 'folder_types.id as folder_type_id', 'folder_types.name as folder_type_name', 'folder_types.file_number')
+            ->join('folder_types', 'folder_types.id', '=', 'folders.folder_type_id')
+            ->where(['folders.user_id' => $user_id, 'folders.status' => 'ACCEPTED'])
+            ->orderBy('folders.created_at', 'desc')
+            ->get();
+        return response()->json($data);
+    }
+
+    public function getPendingFolders($user_id) {
+        $data = Folder::select('folders.*', 'folder_types.id as folder_type_id', 'folder_types.name as folder_type_name', 'folder_types.file_number')
+            ->join('folder_types', 'folder_types.id', '=', 'folders.folder_type_id')
+            ->where(['folders.user_id' => $user_id, 'folders.status' => 'PENDING'])
+            ->orderBy('folders.created_at', 'desc')
+            ->get();
+        return response()->json($data);
+    }
+
+    public function getRejectedFolders($user_id) {
+        $data = Folder::select('folders.*', 'folder_types.id as folder_type_id', 'folder_types.name as folder_type_name', 'folder_types.file_number')
+            ->join('folder_types', 'folder_types.id', '=', 'folders.folder_type_id')
+            ->where(['folders.user_id' => $user_id, 'folders.status' => 'REJECTED'])
+            ->orderBy('folders.created_at', 'desc')
+            ->get();
+        return response()->json($data);
+    }
+
+    public function getArchivedFolders($user_id) {
+        $data = Folder::select('folders.*', 'folder_types.id as folder_type_id', 'folder_types.name as folder_type_name', 'folder_types.file_number')
+            ->join('folder_types', 'folder_types.id', '=', 'folders.folder_type_id')
+            ->where(['folders.user_id' => $user_id, 'folders.status' => 'ARCHIVED'])
+            ->orderBy('folders.created_at', 'desc')
+            ->get();
+        return response()->json($data);
+    }
+
+    //trouver tous les fichiers d'un dossier
+    public function findFiles($id){
+        if (!$folder = Folder::find($id)) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode(" FOLDER_NOT_FOUND");
+            $apiError->setMessage("Le dossier d'id $id n'existe pas");
+            return response()->json($apiError, 404);
+        }
+         $files = $folder->files;
+         $folder->folderType;
+         foreach($files as $file)
+            $file->filetype;
+         return response()->json($folder);
+
+    }
+    //trouver tout les dossiers archivés
+    public function findTreatedFolders(){
+        $folders = Folder::where('status','ARCHIVED')->get();
+        return response()->json($folders);
     }
 }

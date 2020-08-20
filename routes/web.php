@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Controllers\Controller;
-use App\Http\Controllers\Activity;
 
 
 /*
@@ -16,3 +15,6 @@ use App\Http\Controllers\Activity;
 |
 */
 
+Route::get('/', function () {
+    return view('/welcome');
+});

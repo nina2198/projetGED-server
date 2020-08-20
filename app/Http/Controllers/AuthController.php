@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Auth;
 use \Carbon\Carbon;
+use App\Models\Service\Service;
 
 class AuthController extends Controller
 {
@@ -30,6 +31,7 @@ class AuthController extends Controller
             $user = Auth::user();
             $user->last_login = Carbon::now();
             $user->save();
+            $user->avatar = url($user->avatar);
             $tokenResult = $user->createToken(self::$tokenName);
             $token = $tokenResult->token;
             $token->expires_at = Carbon::now()->addDay();
@@ -37,6 +39,10 @@ class AuthController extends Controller
                 $token->expires_at = Carbon::now()->addMonth();
             }
             $token->save();
+            if(isset($user->service_id)) {
+                if($service = Service::find($user->service_id))
+                    $user['service'] = $service;
+            }
 
             return response()->json([
                 'token' => [
@@ -46,7 +52,7 @@ class AuthController extends Controller
                 ],
                 'user' => $user,
                 'roles' => $user->roles,
-                'permissions' => $user->allPermissions()
+                'permissions' => $user->permissions
             ]);
         } else {
             $unauthorized = new APIError;

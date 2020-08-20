@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Folder\File;
 use App\Models\Folder\Folder;
 use App\Models\Folder\FolderType;
+use App\Models\Folder\FileType;
 use Illuminate\Http\Request;
 use App\Models\APIError;
 
@@ -32,19 +33,21 @@ class FileController extends Controller
     // Créer un dossier
     public function create(Request $req)
     {
-        $data = $req->only(['name', 'description', 'file_size', 'file_type', 'folder_id']);
+        $data = $req->only(['name', 'file_size', 'file_type_id', 'path', 'folder_id']);
         $this->validate($data, [
             'name' => 'required',
-            'description' => 'required',
             'file_size' => 'required',
-            'file_type' => 'required|in:PHOTO,PDF',
+            'file_type_id' => 'required:exists:file_types:id',
             'folder_id' => 'required:exists:folders:id',
+            'path' =>  'required|file'
         ]);
         
+        $file_type = FileType::find($data['file_type_id']);
+
         $rules = null;
-        if($data['file_type'] == 'PHOTO') {
+        if($file_type->file_type == 'PHOTO') {
             $rules = array_merge(['file'], ['mimes:jpg,png,jpeg']);
-        } else if($data['file_type'] == 'PDF') {
+        } else if($file_type->file_type == 'PDF') {
             $rules = array_merge(['file'], ['mimes:pdf']);
         }
         $rules = array_unique($rules);
@@ -57,12 +60,12 @@ class FileController extends Controller
 
         $file = new File();
         $file->name = $data['name'];
-        $file->description = $data['description'];
         $file->file_size = $data['file_size'];
+        $file->file_type_id = $data['file_type_id'];
         $file->folder_id = $data['folder_id'];
-        $file->file_type = $data['file_type'];
         if(isset($data['path'])) $file->path = $data['path'];
         $file->save();
+        $file->path = url($file->path);
 
         return response()->json($file);
     }
@@ -82,7 +85,7 @@ class FileController extends Controller
             $apiError->setMessage("le type de dossier d'id $folder->folder_type_id n'existe pas");
             return response()->json($apiError, 404);
         }
-        return $folder_type->name . '/' . $folder->name;
+        return $folder_type->slug . '\\' . $folder->slug;
     }
 
     // Rechercher un dossier par son id
