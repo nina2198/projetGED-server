@@ -16,7 +16,6 @@ use App\Http\Controllers\Activity;
 |
 */
 
-Route::get('/home', 'Activity\InstActivitesController@index_hanging');
 
 Route::get('/', function () {
     return view('/welcome');

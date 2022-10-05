@@ -5,7 +5,7 @@ namespace App\Http\Controllers\service;
 use App\Http\Controllers\Controller;
 use App\Models\service\Service;
 use Illuminate\Http\Request;
-use App\APIError;
+use App\Models\APIError;
 
 class ServiceController extends Controller
 {
@@ -39,15 +39,12 @@ class ServiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $req)
     {
-        $data = $request->except('photo');
+        $data = $req->only('name');
 
         $this->validate($data, [
-            'ordination_date' => 'required',
-            'ordination_place' => 'required',
-            'ordination_godfather' => 'required',
-            'career' => 'required',
+            'name' => 'required',
         ]);
 
             $Service = new Service();
@@ -89,19 +86,18 @@ class ServiceController extends Controller
      */
     public function update(Request $req, $id)
     {
-        $service = Service::find($id);
-        if (!$service) {
-            abort(404, "No service found with id $id");
+         if(!$service = Service::find($id)) {
+            $apiError = new APIError;
+            $apiError->setStatus("404");
+            $apiError->setCode("SERVICE_DON'T_EXIST");
+            $apiError->setMessage("Le Nom de ce Service n'existe pas");
+            return response()->json($apiError, 404);
         }
 
-        $this->validate($data, [
-            'name' => 'required',
-        ]);
-
-        if (null !== $data['name']) $service->name = $data['name'];
-        
+        $data = $req->only('name');
+        if (isset($data['name'])) 
+            $service->name = $data['name'];
         $service->update();
-
         return response()->json($service);
     }
 
@@ -116,11 +112,16 @@ class ServiceController extends Controller
     public function destroy($id)
     {
         if (!$service = Service::find($id)) {
-            abort(404, "No service found with id $id");
+            $unauthorized = new APIError;
+            $unauthorized->setStatus("404");
+            $unauthorized->setCode("ASSIGNMENT_NOT_FOUND");
+            $unauthorized->setMessage("Service id not found in database.");
+
+            return response()->json($unauthorized, 404);
         }
 
         $service->delete();      
-        return response()->json();
+        return response()->json($service);
     }
 
     /**
@@ -133,11 +134,10 @@ class ServiceController extends Controller
     public function search(Request $req)
     {
         $this->validate($req->all(), [
-            'q' => 'present',
-            'field' => 'present'
+            'name' => 'present',
         ]);
 
-        $data = Service::where($req->field, 'like', "%$req->q%")
+        $data = Service::where('name', 'like', "%$req->name%")
             ->get();
 
         return response()->json($data);
@@ -159,4 +159,29 @@ class ServiceController extends Controller
         }
         return response()->json($service);
     }
+
+    /**
+     * @author NGOMSEU
+     * Get all the activity for the service
+     */
+    public function activities(Request $req, $id)
+    {
+        //activitiesInstances : function define in the  model activity 
+        $activities = Service::simplePaginate($req->has('limit') ? $req->limit : 15)->find($id)->activities;
+                              
+        return response()->json($activities);
+    }
+
+     /**
+     * @author NGOMSEU
+     * Get all the users for the service
+     */
+    public function users(Request $req, $id)
+    {
+        //activitiesInstances : function define in the  model activity 
+        $activities = Service::simplePaginate($req->has('limit') ? $req->limit : 15)->find($id)->users;
+                              
+        return response()->json($activities);
+    }
+
 }

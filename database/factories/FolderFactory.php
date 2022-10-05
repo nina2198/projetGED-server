@@ -7,7 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Folder::class, function (Faker $faker) {
     return [
-        'name' => $faker->text(10),
+        'name' => $faker->text(30),
         'description' => $faker->sentence(),
         'status' => $faker->randomElement(['ACCEPTED', 'PENDING', 'REJECTED', 'ARCHIVED']),
         'track_id' => $faker->numberBetween(2000, 4000)

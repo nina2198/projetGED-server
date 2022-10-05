@@ -36,6 +36,10 @@ Route::group(['prefix' => 'persons'], function () {
         Route::post('/', 'Person\UserController@create');
         Route::delete('/{id}', 'Person\UserController@destroy');
         Route::match(['post', 'put'],'/{id}', 'Person\UserController@update');
+        Route::get('/status/{id}', 'Person\UserController@instances_waiting');
+        Route::get('/status/{id}', 'Person\UserController@instances_hanging');
+        Route::post('/reset-password', 'Person\UserController@reinitializePassword');
+
     });
 
     Route::group(['prefix' => 'permissions'], function () {
@@ -99,13 +103,48 @@ Route::group(['prefix' => 'folders'], function () {
     });
 
 });
+
+
+Route::group(['prefix' => 'activities'], function(){
+    Route::get('/', 'Activity\ActivitiesController@index');
+    Route::get('/j', 'Activity\ActivitiesController@join');
+    Route::post('/create', 'Activity\ActivitiesController@create');
+    Route::get('/{id}', 'Activity\ActivitiesController@find') ;
+    Route::match(['post', 'put'], '/{id}', 'Activity\ActivitiesController@update') ;
+    Route::get('/inst/{id}', 'Activity\ActivitiesController@activities_instances');
+    Route::get('/service/{id}', 'Activity\ActivitiesController@service');
+    Route::get('/services/{id}', 'Activity\ActivitiesController@find_service');
+
+});
+
+Route::group(['prefix' => 'activity_instances'], function(){
+    Route::get('/', 'Activity\ActivityInstancesController@index') ;
+    Route::get('/{id}', 'Activity\ActivityInstancesController@find');
+    Route::get('/activity/{id}', 'Activity\ActivityInstancesController@activity');
+    Route::get('/user/{id}', 'Activity\ActivityInstancesController@user'); 
+    Route::get('/pourcent/{id}', 'Activity\ActivitySchemasController@getFolderProgressionPourcentage');
+    Route::get('/ordre/{id}', 'Activity\ActivitySchemasController@getActivityOrderAndServiceNumber');
+    Route::get('/ordr/{id}', 'Activity\ActivitySchemasController@getFolderPoucentage');
+
+
+    Route::post('/init/{schema_id}/{track_id}', 'Activity\ActivityInstancesController@initialiserInstance');
+    Route::get('/folder/{id}', 'Activity\ActivityInstancesController@getIdFolder');
+    Route::post('/edit/{id}', 'Activity\ActivityInstancesController@edit');
+
+});
+
  // Service module : 'middleware' => 'auth:api',
  Route::group(['prefix' => 'Service'], function () {
     Route::get('/', 'Service\ServiceController@index');
     Route::get('/find/{id}', 'Service\ServiceController@find');
     Route::get('/search', 'Service\ServiceController@search');
     Route::delete('/destroy/{id}', 'Service\ServiceController@destroy');
-    Route::put('/update/{id}', 'Service\ServiceController@update');
+    Route::match(['post', 'put'],'/update/{id}', 'Service\ServiceController@update');
     Route::post('/create', 'Service\ServiceController@store');
+    Route::get('/activities/{id}', 'Service\ServiceController@activities');
+    Route::get('/u/{id}', 'Service\ServiceController@users');
+});
 
+Route::group(['prefix' => 'schemas'], function () {
+    Route::post('/', 'Activity\ActivitySchemasController@create');
 });

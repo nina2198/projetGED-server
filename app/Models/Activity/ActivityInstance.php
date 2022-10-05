@@ -4,14 +4,9 @@ namespace App\Models\Activity;
 
 use Illuminate\Database\Eloquent\Model;
 
-class InstActivites extends Model
+class ActivityInstance extends Model
 {
     protected $guarded = [];
-    protected $fillable = [
-        'idActivity',
-        'idUser',
-        'status',
-    ];
 
     public function getStatus($status)
     {
@@ -21,5 +16,18 @@ class InstActivites extends Model
             'ENDING' => 'Deja traité', 
             'EXECUTION' => 'en cours de traitement',
         ][$status];
+    }
+
+    /**
+     * Get the activity for this instance
+     */
+    public function activity()
+    {
+        return $this->belongsTo('App\Models\Activity\Activity','activity_id');
+    }
+
+    //une instance d'activité est effectuée par l'admin du service
+    public function user(){
+        return $this->belongsTo('App\Models\Person\User') ;
     }
 }

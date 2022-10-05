@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\Schema;
+namespace App\Models\Activity;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Schema extends Model
+class ActivitySchema extends Model
 {
     protected $guarded = [];
 }

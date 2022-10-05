@@ -51,4 +51,13 @@ class User extends Authenticatable
     public function roles() {
         return $this->belongsToMany('App\Models\Person\Role');
     }
+
+    /**
+     *  @author Ulrich Bertrand
+     * Get the instances for the activity
+     */
+    public function activitiesInstances()
+    {
+        return $this->hasMany('App\Models\Activity\ActivityInstance');
+    }
 }
